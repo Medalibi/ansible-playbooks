@@ -1,0 +1,44 @@
+---
+- name: Update Windows softwares using Chocolatey
+  hosts: ThinClientTR1 ThinClientTR2                   #ThinClientTR1 ThinClientTR2 
+  gather_facts: no
+  tasks:
+    - name: Update Chocolatey
+      win_chocolatey:
+        name: chocolatey
+        state: latest
+
+    - name: Update VMware Horizon
+      win_chocolatey:
+        name: vmware-horizon-client
+        state: latest
+
+    - name: Update Other Softwares
+      win_chocolatey:
+        name: 7zip firefox googlechrome notepadplusplus
+        state: latest
+
+#    - name: Upgrade all installed software to the lastest version 
+#      win_chocolatey:
+#        name: all
+#        state: latest
+
+#####    - name: Update Adobereader
+#####      win_chocolatey:
+#####        name: adobereader
+#####        upgrade: True
+
+    - name: Update Flash Player Plugin
+      win_chocolatey:
+        name: flashplayerplugin
+        state: latest
+
+#        version: 1.12.5
+#        source: https://github.com/atom/atom/releases/download/v1.12.5/
+#        state: absent
+
+#    - name: Atom installation using github as source
+#      win_chocolatey:
+#        name: atom
+#        version: 1.15.0
+#        source: https://github.com/atom/atom/releases/

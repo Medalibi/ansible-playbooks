@@ -1,0 +1,27 @@
+---
+- name: Run shell commands as they are
+  gather_facts: no
+  hosts: TR2
+  tasks:
+   - name: Create the Ubuntu default Desktop icons 
+     shell: gsettings set org.gnome.nautilus.desktop home-icon-visible  true; gsettings set org.gnome.nautilus.desktop volumes-visible true; gsettings set org.gnome.nautilus.desktop trash-icon-visible true
+     become: true
+     become_user: training
+
+#   - name : shell command
+#     shell : export "PATH=/media/penelopeprime/anaconda2/bin:$PATH"
+#     become: true
+#     become_user: training   
+
+#   - shell: sed -i '$d' /etc/bash.bashrc
+#   - shell: sed -i 's/\/usr\/local\/anaconda2\/bin/\/media\/penelopeprime\/anaconda2\/bin/' /etc/bash.bashrc
+
+
+#   - name : install limix using pip
+#     shell: pip install limix
+#     become: true
+#     become_user: training
+
+#   - shell : echo "'export PATH=/media/penelopeprime/anaconda2/bin:$PATH'" >> /etc/bash.bashrc
+
+   

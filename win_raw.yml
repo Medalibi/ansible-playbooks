@@ -1,0 +1,25 @@
+---
+- name: Execute Raw Command on Windows
+  hosts: ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Sending the command
+
+
+#      raw: dir 'C:\SWSETUP\*'
+#      raw: dir 'C:\Program Files (x86)\Atom Installer\*'
+#      raw: dir 'C:\Users\r1*\Desktop\*'      
+#      raw: dir 'C:\Program Files'
+#      shell: qusers 
+      raw: Unregister-ScheduledTask -TaskName InstallAtom -Confirm:$false
+#      raw: $action = New-ScheduledTaskAction -Execute 'C:\Program Files (x86)\Atom Installer\atom.exe'; $trigger = New-ScheduledTaskTrigger -AtLogon -User "*"; Register-ScheduledTask -Action $action -Trigger $trigger -TaskName InstallAtom -Description "Launching Atom installer";
+
+
+      register: output
+
+
+#    - win_reboot:
+#        pre_reboot_delay_sec: 10
+
+
+    - debug: var=output.stdout_lines

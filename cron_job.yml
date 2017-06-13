@@ -1,0 +1,6 @@
+---
+- hosts : TR1
+  tasks :
+   - name : Job to run 
+#     cron : name="Test run Cytoscape" minute="00" hour="10" job="su training -c 'DISPLAY=:0.0 /usr/local/Cytoscape3_4/Cytoscape'"
+     cron : name="Test run Cytoscape" state=absent

@@ -1,0 +1,8 @@
+---
+- name: Windows Power Control
+  hosts: ThinClientTR1 ThinClientTR2              # ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Restart all Machines  
+      win_reboot:
+        msg: Reboot initiated by Ansible

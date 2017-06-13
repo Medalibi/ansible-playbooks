@@ -1,0 +1,9 @@
+---
+- name: Check Nvidia GPU level
+  hosts: TR2
+  gather_facts: no
+  tasks:
+    - shell: nvidia-smi -q -g 0 -d UTILIZATION | sed -n '14,19p' 
+      register: ps
+
+    - debug: var=ps.stdout_lines

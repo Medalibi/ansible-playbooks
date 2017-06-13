@@ -1,0 +1,16 @@
+---
+- hosts: test
+  gather_facts: no
+  tasks:
+   - name: Add Nvidia Repository
+     apt_repository: repo='ppa:xorg-edgers/ppa' state=present
+     register: ppastable
+
+   - name: Install Nvidia
+     apt: pkg=nvidia-352 state=installed update_cache=true
+     when: ppastable|success
+
+   - name: Install Nvidia-settings
+     apt: pkg=nvidia-settings state=installed update_cache=true
+     when: ppastable|success
+

@@ -1,0 +1,19 @@
+---
+#- name: test raw module
+#  hosts: windows 
+# tasks:
+#    - name: run ipconfig
+#      raw: whoami
+#      register: ipconfig
+#    - debug: var=ipconfig
+
+- name: Get service Info
+  hosts: windowsTR1
+  tasks:
+    - win_shell: sc query wuauserv
+      args:
+        executable: cmd
+      register: stat
+
+    - debug: var=stat
+

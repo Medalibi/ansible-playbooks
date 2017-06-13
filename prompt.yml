@@ -1,0 +1,11 @@
+---
+- hosts: TR1
+  gather_facts: no
+  vars_prompt:
+  - name: "Message"
+    prompt: "Type in the message"
+    private: no
+  tasks:
+    - name: "Showing the text"
+      shell: DISPLAY=:0.0 zenity --info --text='\"{{ Message }}\"';
+      become_user: training

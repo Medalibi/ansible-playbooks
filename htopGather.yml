@@ -1,0 +1,20 @@
+---
+- name: Hosts Resources Gathering (CPU, RAM and GPU)
+  hosts: TR1			## TR1 TR2 local
+  gather_facts: no
+  tasks:
+    - name: Packages Installation... 
+      apt: pkg={{item}} state=installed update_cache=true
+      with_items:
+        - aha
+        - htop
+
+    - name: Gathering CPU and RAM Info...
+      shell: echo "$(hostname) ===========>" > /media/penelopeprime/Scripts/htop/$(hostname -s); echo q | htop | aha --line-fix --no-header | head -n 7 >> /media/penelopeprime/Scripts/htop/$(hostname -s)
+    - name: Gathering GPU Info...
+      shell: nvidia-smi -q -g 0 -d UTILIZATION | sed -n '14,19p' | aha --line-fix --no-header >> /media/penelopeprime/Scripts/htop/$(hostname -s)
+    - name: Closing up...
+      shell: echo "################################################################################" >> /media/penelopeprime/Scripts/htop/$(hostname -s)
+#      register: ps
+
+#    - debug: var=ps.stdout_lines

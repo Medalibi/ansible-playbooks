@@ -1,0 +1,13 @@
+---
+- name: File Management on Windows
+  hosts: ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Removing file or folder
+
+#      win_file: path='C:\Users\*\Desktop\Atom*' state=absent 
+#      win_file: path='C:\Program Files (x86)\Atom Installer' state=absent
+#      win_file: path='C:\Users\*\AppData\Local\*tom' state=absent
+#      win_file: path=C:\SWSETUP\*.exe state=absent
+      win_file: path=C:\SWSETUP\*.msi state=absent
+#      win_file: path=C:\Users\*\Desktop\?hared*.lnk state=absent

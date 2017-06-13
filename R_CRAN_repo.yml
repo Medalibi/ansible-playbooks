@@ -1,0 +1,13 @@
+---
+- name: Change R CRAN repo from the APT sourse.list file
+  hosts : TR1
+  tasks : 
+
+#### does not work    - lineinfile: dest=/etc/apt/sources.list regexp='mirrors.ebi.ac.uk/CRAN' line='cran.ma.imperial.ac.uk'
+
+    - shell: sed -i 's/mirrors.ebi.ac.uk\/CRAN/cran.ma.imperial.ac.uk/' /etc/apt/sources.list
+
+#    - shell: sed -i 's/cran.ma.imperial.ac.uk/mirrors.ebi.ac.uk\/CRAN/' /etc/apt/sources.list
+
+    - apt: update_cache=yes
+

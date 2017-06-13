@@ -1,0 +1,34 @@
+---
+- name: Manage files/folder into remote machines
+  hosts: TR1
+  gather_facts: no
+  tasks:
+#   - file:
+#      path: /etc/apt/sources.list.d/bin_linux_ubuntu.list
+#      state: absent
+
+#   - file:
+#      path: /usr/local/MATLAB/R2016b/licenses
+#      mode: 0777
+#      recurse: yes
+
+
+   - copy: 
+       src: /media/penelopeprime/course-assoc 					###"{{ item }}"
+       dest: /home/training/
+#       remote_src: True
+       owner: training 
+       mode: 0777
+
+#     with_fileglob: /media/penelopeprime/NA128*
+
+#   - shell: chown training -R /home/training/NA128*
+
+   - file: 
+      path: /home/training/course-assoc						####"{{ item }}"
+      mode: 0777
+      owner: training 
+      state: directory
+      recurse: yes
+
+#     with_fileglob: /home/training/NA128*

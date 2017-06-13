@@ -1,0 +1,19 @@
+---
+- name: Add and Mount an NFS file system
+  hosts: TR1
+  gather_facts: no
+  tasks:
+    - name: Create the mount folder
+      shell: mkdir /media/sharedprime; chmod 777 -R /media/sharedprime
+
+    - name: Install NFS Client
+      apt: pkg=nfs-client state=installed update_cache=true
+
+    - name: Add the configuration file to "/etc/fstab"
+      lineinfile: dest=/etc/idmapd.conf line="Domain = courses.ebi.ac.uk"
+
+    - name: Add the configuration file to "/etc/fstab"
+      lineinfile: dest=/etc/fstab line="penelopeprime.courses.ebi.ac.uk:/media/shared	/media/sharedprime	nfs4	defaults	0 0" 
+
+    - name: Apply the new mount configuration
+      shell: mount -a

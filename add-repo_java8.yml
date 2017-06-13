@@ -1,0 +1,21 @@
+---
+- name : Install Java 8 
+  hosts : master 
+  tasks:
+  - name: Add Java 8 Repository
+    apt_repository: repo='ppa:webupd8team/java' state=present
+    register: ppastable
+
+  - name: accept oracle license
+    debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+
+  - name: Install Java 8
+    apt: pkg=oracle-java8-installer state=installed update_cache=true
+    when: ppastable|success
+    register: oracle-java8-installer
+
+  - name: Install Java 8 set default
+    apt: pkg=oracle-java8-set-default state=installed update_cache=true
+    when: ppastable|success
+    register: oracle-java8-set-default
+

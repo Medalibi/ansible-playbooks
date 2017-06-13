@@ -1,0 +1,22 @@
+---
+- name: Installing R packages
+  gather_facts: no
+  hosts: TR2
+  roles:
+    - r
+  vars:
+#    r_install_dev: true
+    # apt packages
+#    r_install:
+#      - r-recommended
+    # cran or bioconductor (R) packages
+    r_packages:
+      - name: nycflights13
+#      - name: KEGGREST 
+#      - name: SPIA 
+#      - name: pathview 
+#      - name: graph 
+#      - name: Rgraphviz 
+#      - name: KEGGgraph 
+#      - name: BiRewire 
+        type: cran

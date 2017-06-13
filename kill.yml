@@ -1,0 +1,6 @@
+---
+- hosts: TR1
+  gather_facts: no
+  tasks:
+    - name: Killing the Process 
+      shell : ps aux | grep -ie "Cytoscape" | awk '{print $2}' | xargs kill

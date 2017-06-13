@@ -1,0 +1,10 @@
+---
+- hosts: local
+  gather_facts: no
+  vars_prompt:
+  - name: Remove the message
+    prompt: Type enter to remove the message
+    private: no
+  tasks:
+    - name: "{{ target_host }}"
+      shell: pkill zenity

@@ -1,0 +1,45 @@
+---
+- name: Install packages using apt-get
+  gather_facts: no
+  hosts: TR1
+  tasks:
+   - name: fix flash plugins error
+     shell: pkexec /usr/lib/update-notifier/package-data-downloader
+   - shell: pkill update-notifier
+
+
+
+#   - name: Update the software cache
+#     apt: update_cache=yes
+
+#   - name: Upgrade all software
+#     apt: upgrade=dist
+
+#   - name: Install rstudio latex lib
+#     apt: pkg={{item}} state=absent
+#     with_items:
+#       - ganglia-monitor
+#       - r-cran-rmysql
+#       - r-cran-tkrplot
+#       - libpq-dev
+
+#   - name: restart machine
+#     command: shutdown -r now "Ansible reboot triggred"
+#     async: 0
+#     poll: 0
+#     ignore_errors: true
+
+
+#   - name: Install pymol
+#     apt: pkg=pymol state=installed update_cache=true
+
+#   - name: Install Gdebi
+#     apt: pkg=gdebi state=installed update_cache=true
+
+#   - name : Install 1st batch of packages for STAMP
+#     apt : name={{item}} state=installed update_cache=true
+#     with_items:
+#       - bwa
+#       - samtools
+#       - igv
+

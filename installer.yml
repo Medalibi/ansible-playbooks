@@ -1,0 +1,12 @@
+---
+- hosts : all
+  gather_facts: no
+  tasks :
+  - name : Install Apt packages 
+    shell : mkdir /home/training/Desktop/Welcome_folder  ##apt-get install -y libxml2 libxml2-dev curl libcurl4-openssl-dev libcurl3 libcurl-ocaml terminator
+    register: result  
+
+  tasks:
+  - name : copy some files
+    copy : src=/media/penelope/Setup/Jdk8_installer.sh dest=/usr/local owner=training mode=0777 
+    when: result|success

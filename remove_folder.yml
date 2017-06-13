@@ -1,0 +1,11 @@
+---
+- hosts : TR1
+  gather_facts: no
+  tasks :
+   - name : Remove a folder
+     file: path=/home/training/Desktop/{{ item }} state=absent
+     with_items:
+       - MEGAN_Ultimate_unix_6_5_6.sh
+#       - MEGAN.desktop
+#       - Cytoscape.desktop
+

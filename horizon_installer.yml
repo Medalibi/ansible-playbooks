@@ -1,0 +1,38 @@
+---
+- name: Install Horizon ViewAgent into the Linux VM
+  hosts: ImmunoVM-33             ## TR1 TR2
+  gather_facts: no
+  tasks:
+   #- copy:
+   #    src: "/media/penelopeprime/Scripts/Horizon_tarballs/VMware-horizonagent-linux-x86_64-7.1.0-5141896.tar.gz"
+   #    dest: /home/setup/
+   #    owner: setup
+   #    mode: 0777
+
+   - name: Unarchive the Horizon ViewAgent Tarball
+     unarchive:
+       src: "/media/penelopeprime/Scripts/Horizon_tarballs/VMware-horizonagent-linux-x86_64-7.1.0-5141896.tar.gz"
+       dest: /home/setup/
+       remote_src: True  
+       owner: setup
+       mode: 0777
+
+#   - name: Install the VHCI driver for USB support
+#     shell: cd /usr/local/vhci-hcd-1.15; sudo  make; sudo make install
+
+   - name: Install and register the Horizon ViewAgent with the Connection server
+     shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n $(hostname -s) -b broker7test.courses.ebi.ac.uk -d courses.ebi.ac.uk -u linuxviewadmin -p fridge 
+     register: HorizonInstallLog
+
+   - name: Collecting installation logs
+     debug: var=HorizonInstallLog.stdout_lines
+
+   - name: Changing the default network in the Viewagenet configuration file
+     lineinfile : dest=/etc/vmware/viewagent-custom.conf regexp='^#Subnet=192.168.1.0/24' line='Subnet=10.7.243.0/24'
+
+   - name: Restart machines to apply the change
+     command: /sbin/shutdown -r +1 "Reboot triggered by Ansible (Horizon Agent installation)."
+     async: 0
+     poll: 0
+     ignore_errors: true
+     

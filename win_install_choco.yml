@@ -1,0 +1,11 @@
+---
+- name: Install packages using Chocolatey into Windows
+  hosts: ThinClientTR1 ThinClientTR2 
+  gather_facts: no
+  tasks:
+    - name: initializing installation
+      win_chocolatey:
+        name: vmware-horizon-client
+#        version: 1.12.5
+#        source: https://github.com/atom/atom/releases/download/v1.12.5/
+#        state: absent

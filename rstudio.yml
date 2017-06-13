@@ -1,0 +1,4 @@
+---
+- hosts: TR1
+  roles:
+    - rstudio

@@ -1,0 +1,37 @@
+---
+- hosts: local
+  tasks:
+   - name: generate ticket on the icinga master and save it as a variable
+     shell: icinga2 pki ticket --cn {{ hostitem }}
+     register: ticket
+- hosts: "{{ hostitem }}"
+  vars:
+   master_hostname: managementlinux.courses.ebi.ac.uk
+   master_ip: 10.7.243.30 #"{{ hostvars['managementlinux.courses.ebi.ac.uk']['ansible_default_ipv4']['address'] }}"
+   master_port: 5665
+  tasks:
+    - name: 
+    - name: Add Icinga2 Repository
+      apt_repository: repo='ppa:formorer/icinga' state=present
+      register: ppastable
+    - name: Install Icinga2
+      apt: pkg=icinga2 state=installed update_cache=true
+      when: ppastable|success
+ 
+
+    - name: create pki folder
+      file: path=/etc/icinga2/pki state=directory mode=0700 owner=nagios group=nagios
+    - name: create cert
+      shell: icinga2 pki new-cert --cn {{ hostitem }} --key /etc/icinga2/pki/{{ hostitem }}.key --cert /etc/icinga2/pki/{{ hostitem }}.crt
+    - name: save the masters cert as trustedcert
+      shell: icinga2 pki save-cert --key /etc/icinga2/pki/{{ hostitem }}.key --cert /etc/icinga2/pki/{{ hostitem }}.crt --trustedcert /etc/icinga2/pki/trusted-master.crt --host {{ master_hostname }}
+    - name: request the certificate from the icinga server
+      shell: "icinga2 pki request --host icinga-server --port 5665 --ticket {{ hostvars['managementlinux.courses.ebi.ac.uk']['ticket']['stdout'] }} --key /etc/icinga2/pki/{{ hostitem }}.key --cert /etc/icinga2/pki/{{ hostitem }}.crt --trustedcert /etc/icinga2/pki/trusted-master.crt --ca /etc/icinga2/pki/ca.key"
+    - name: node setup
+      shell: "icinga2 node setup --ticket {{ hostvars['managementlinux.courses.ebi.ac.uk']['ticket']['stdout'] }} --endpoint {{ master_hostname }} --zone {{ hostitem }} --master_host {{ master_hostname }} --trustedcert /etc/icinga2/pki/trusted-master.crt --cn {{ hostitem }}"
+- hosts: local
+  tasks:
+   - name: add host
+     shell: icinga2 node add {{ hostitem }}
+   - name: set host ip
+     shell: icinga2 node set {{ hostitem }} --host {{ hostitem }} --port 5665

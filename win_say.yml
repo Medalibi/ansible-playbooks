@@ -1,0 +1,8 @@
+---
+- name: Convert text to Speech on Windows
+  hosts: windowsTR2
+  tasks:
+    - win_say:
+        start_sound_path: 'C:\Windows\Media\ding.wav'
+        msg: You are is awesome!
+        voice: Microsoft Hazel Desktop

@@ -1,0 +1,35 @@
+---
+- name: Test File Transfer Speed
+  gather_facts: no
+  hosts: TR1
+  tasks:
+   - name: Copy folder from PenelopePrime NFS to local machine
+     shell: rsync -r -p --info=progress2 --no-inc-recursive --human-readable /media/sharedprime/Metagenomic* /home/mh_user/ > PPNFS.log
+   - name: Gathering data
+     shell: tail -c 65 PPNFS.log | awk '{print "PenelopePrime NFS4 " $1 "   " $3 "   " $4}'
+     register: PPNFS
+
+   - name: Removing old files
+     shell: rm -r /home/mh_user/Metagenomic*
+
+   - name: Copy folder from PenelopePrime SMB to local machine
+     shell: rsync -r -p --info=progress2 --no-inc-recursive --human-readable /media/sharedprime/Metagenomic* /home/mh_user/ > PPSMB.log
+   - name: Gathering data
+     shell: tail -c 65 PPSMB.log | awk '{print "PenelopePrime Samba " $1 "   "$3 "   " $4}'  
+     register: PPSMB
+
+   - name: Removing old files
+     shell: rm -r /home/mh_user/Metagenomic*
+
+   - name: Copy folder from OLD Penelope SMB to local machine
+     shell: rsync -r -p --info=progress2 --no-inc-recursive --human-readable /media/penelope/Metagenomic* /home/mh_user/ > PENSMB.log
+   - name: Gathering data
+     shell: tail -c 65 PENSMB.log | awk '{print "Penelope Samba " $1 "   " $3 "   " $4}'
+     register: PENSMB
+
+   - name: Removing old files
+     shell: rm -r /home/mh_user/Metagenomic*
+
+   - debug: var=PPNFS.stdout_lines
+   - debug: var=PPSMB.stdout_lines
+   - debug: var=PENSMB.stdout_lines

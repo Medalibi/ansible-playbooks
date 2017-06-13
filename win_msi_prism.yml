@@ -1,0 +1,30 @@
+---
+- name : Install Prism MSI packages 
+  hosts: r2u21            #ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Copy the MSI file to the host
+      win_copy:
+        src=/media/penelopeprime/Archive/InstallPrism7.msi
+        dest=C:\InstallPrism7.msi
+
+    - name: Copy the MSI Config file to the host
+      win_copy:
+        src=/media/penelopeprime/Archive/prism-config.xml
+        dest=C:\prism-config.xml
+
+    - name: Install an MSI file with arguments
+      win_msi: 
+        path: C:\InstallPrism7.msi
+#        state: absent
+        extra_args: /QUIET STARTUPCONFIGPATH="C:\"
+        wait: true
+      register: output
+
+    - debug: var=output
+
+    - name: Delete the MSI file
+      win_file: path=C:\InstallPrism7.msi state=absent
+
+    - name: Delete the MSI Config file
+      win_file: path=C:\InstallPrism7.msi state=absent

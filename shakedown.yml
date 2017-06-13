@@ -1,0 +1,110 @@
+---
+- hosts : TR1 
+  gather_facts: no
+  tasks :
+#  - name : Copy chimera
+#    copy : src=/home/alibi/Downloads/chimera-1.11.1-linux_x86_64.bin dest=/usr/local/ owner=training mode=0777 
+
+#  - name : Install expect
+#    apt : pkg=expect state=installed update_cache=true 
+
+#  - name : install Chimera 
+#    script : ./chimera.exp
+
+#   - name : Set Desktop icon for Chimera
+#     copy : src=./name.desktop dest=/home/training/Desktop/Chimera.desktop owner=training mode=0777
+#   - lineinfile : dest=/home/training/Desktop/Chimera.desktop regexp='^Name=' line='Name=Chimera'
+#   - lineinfile : dest=/home/training/Desktop/Chimera.desktop regexp='^Exec=' line='Exec=/usr/local/Chimera/bin/chimera'
+#   - lineinfile : dest=/home/training/Desktop/Chimera.desktop regexp='^Icon=' line='Icon=/usr/local/Chimera/chimeraIcon.png'
+#   - lineinfile : dest=/home/training/Desktop/Chimera.desktop regexp='^Terminal=' line='Terminal=false'
+
+
+#  - name : Copy and extract HMMER
+#    unarchive : src=/home/alibi/Downloads/hmmer-3.1b2-linux-intel-x86_64.tar.gz dest=/usr/local/ owner=training mode=0777
+
+#  - name : Configure HMMER
+#    shell : cd hmmer-* ; ./configure ; make ; make check
+
+#  - name : Create symlink HMMER 
+#    shell : export PATH=$PATH:/usr/local/hmmer-3.1b2-linux-intel-x86_64/binaries ; echo "export PATH=$PATH:/usr/local/hmmer-3.1b2-linux-intel-x86_64/binaries" >> /etc/bash.bashrc
+
+###################################
+
+#   - name : Install HMMER with apt
+#     apt : pkg=hmmer state=installed update_cache=true
+
+#   - name : Copy MEGAN Binary
+#     copy : src=/home/alibi/Downloads/MEGAN_Community_unix_6_5_5.sh dest=/usr/local/ owner=training mode=0777
+
+#   - name : Remove old MEGAN installation if any
+#     shell: if [ -d /usr/local/megan ]; then rm -r /usr/local/megan; fi
+
+#   - name : Install MEGAN
+#     script : ./megan.exp
+
+#   - name : Set Desktop icon for MEGAN
+#     copy : src=./name.desktop dest=/home/training/Desktop/MEGAN.desktop owner=training mode=0777
+#   - lineinfile : dest=/home/training/Desktop/MEGAN.desktop regexp='^Name=' line='Name=MEGAN'
+#   - lineinfile : dest=/home/training/Desktop/MEGAN.desktop regexp='^Exec=' line='Exec=/usr/local/megan/MEGAN'
+#   - lineinfile : dest=/home/training/Desktop/MEGAN.desktop regexp='^Icon=' line='Icon=/usr/local/megan/.install4j/MEGAN.png'
+
+#   - name : Install 1st batch of packages for STAMP
+#     apt : name={{item}} state=installed update_cache=true
+#     with_items:
+#       - libblas-dev
+#       - liblapack-dev
+#       - gfortran
+
+#   - name : Install 2nd batch of packages for STAMP
+#     apt : name={{item}} state=installed
+#     with_items:
+#       - freetype* 
+#       - python-pip 
+#       - python-dev 
+#       - python-numpy 
+#       - python-scipy 
+#       - python-matplotlib
+#       - libfreetype6-dev
+#       - libpng3
+
+#   - name : Fix Pip broken packages
+#     shell : if [ -d /tmp/pip_build_root/ ]; then rm -r /tmp/pip_build_root/; fi 
+
+#   - name : install STAMP
+#     pip : name=STAMP
+
+#   - name : Set Desktop icon for STAMP
+#     copy : src=./name.desktop dest=/home/training/Desktop/STAMP.desktop owner=training mode=0777
+#   - lineinfile : dest=/home/training/Desktop/STAMP.desktop regexp='^Name=' line='Name=STAMP'
+#   - lineinfile : dest=/home/training/Desktop/STAMP.desktop regexp='^Exec=' line='Exec=/usr/local/bin/STAMP'
+
+#   - name : Copy and extract InterProScan 
+#     unarchive : src=/home/alibi/Downloads/interproscan-5.19-58.0-64-bit.tar.gz dest=/usr/local/ owner=training mode=0777
+
+#   - name : Symlink creationg for InterProScan
+#     shell : ln -s /usr/local/interproscan-5.19-58.0/interproscan.sh /usr/local/bin/interproscan.sh ; ln -s /usr/local/interproscan-5.19-58.0/interproscan.sh /usr/local/bin/interproscan
+
+#   - name : Copy Cytoscape Binary
+#     copy : src=/home/alibi/Downloads/Cytoscape_3_3_0_unix.sh dest=/usr/local/ owner=training mode=0777
+
+#   - name: Creates directory
+#     file: path=/usr/local/Cytoscape3_3_0 state=directory owner=training mode=0777
+
+
+#   - name : Install Cytoscape
+#     shell: /usr/local/Cytoscape_3_3_0_unix.sh -q -dir /usr/local/Cytoscape3_3_0 
+#     register: ps
+
+#   - debug: var=ps.stdout_lines
+
+#   - name : create Sym link for Cytoscape
+#     shell: ln -s /usr/local/Cytoscape3_3_0/Cytoscape /usr/local/bin/Cytoscape
+
+
+   - name : Set Desktop icon for Cytoscape
+     copy : src=./name.desktop dest=/home/training/Desktop/Cytoscape3_3_0.desktop owner=training mode=0777
+   - lineinfile : dest=/home/training/Desktop/Cytoscape3_3_0.desktop regexp='^Name=' line='Name=Cytoscape3.3.0'
+   - lineinfile : dest=/home/training/Desktop/Cytoscape3_3_0.desktop regexp='^Exec=' line='Exec=/usr/local/Cytoscape3_3_0/Cytoscape'
+   - lineinfile : dest=/home/training/Desktop/Cytoscape3_3_0.desktop regexp='^Icon=' line='Icon=/usr/local/Cytoscape3_3_0/.install4j/Cytoscape.png'
+   - lineinfile : dest=/home/training/Desktop/Cytoscape3_3_0.desktop regexp='^Terminal=' line='Terminal=false'
+

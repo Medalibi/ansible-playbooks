@@ -1,0 +1,27 @@
+---
+- name : Execute Windows Update 
+  hosts: ThinClientTR1 ThinClientTR2                  #ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Executing Windows Update 
+      win_updates: 
+        category_names: 
+          - SecurityUpdates
+          - CriticalUpdates
+          - UpdateRollups
+          - DefinitionUpdates
+          - FeaturePacks
+#          - Application
+          - ServicePacks
+#          - Tools
+          - Updates
+        state: installed
+
+      register: update_result
+    - win_reboot:
+      when: update_result.reboot_required
+
+#    - debug: var=update_result.updates.title
+#    - debug: var=update_result.updates.installed
+#    - debug: var=update_result.installed_update_count
+    - debug: var=update_result.failed_update_count   

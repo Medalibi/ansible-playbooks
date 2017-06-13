@@ -1,0 +1,42 @@
+---
+- name: Apt-get install a software or a list of software
+  hosts: TR2
+  gather_facts: no
+  tasks:
+   - name: Install a list of packages
+     apt: pkg={{item}} state=installed update_cache=true
+     with_items:
+       - nvidia-352
+       - nvidia-settings
+#       - r-cran-tkrplot
+#       - libpq-dev
+     register: output	
+
+
+#   - name: Install pymol
+#     apt: pkg=pymol state=installed update_cache=true
+
+
+
+
+
+#  roles: apt-install
+#  - apt_install__base_packages= aptitude
+
+   - name: check if a reboot is required
+     shell: "[ -f /var/run/reboot-required ]"
+     failed_when: False
+     register: reboot_required
+     changed_when: reboot_required.rc == 0
+     notify: reboot
+
+  handlers:
+   - name: reboot
+     command: shutdown -r now "Ansible reboot triggred after update"
+     async: 0
+     poll: 0
+     ignore_errors: true
+    
+
+   - debug: var=output.stdout
+

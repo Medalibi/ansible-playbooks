@@ -1,0 +1,18 @@
+---
+- name: Install packages into Windows
+  hosts: ThinClientTR2
+  gather_facts: no
+  tasks:
+#    - name: Copy Installation file to the shared space
+#      win_copy: src=/media/penelopeprime/AtomSetup.msi dest=c:\SWSETUP\
+
+    - name: Execute an msi file
+      win_msi:
+        path: C:\\SWSETUP\AtomSetup.msi
+        wait: true
+
+#    - name: Executing the installation steps
+#      raw: C:\\SWSETUP\AtomSetup.msi #wait=true
+
+#    - name: Remove Installation filde from the shared space
+#      win_file: path=C:\\SWSETUP\AtomSetup.msi state=absent

@@ -1,0 +1,8 @@
+---
+- name : Lightdm configuration 
+  hosts: TR2
+  tasks:
+    - lineinfile : dest=/etc/lightdm/lightdm.conf regexp='^autologin-user=' line='autologin-user='
+    - lineinfile : dest=/etc/lightdm/lightdm.conf line='autologin-guest=false'
+    - lineinfile : dest=/etc/lightdm/lightdm.conf line='autologin-user-timeout=0'
+    - lineinfile : dest=/etc/lightdm/lightdm.conf line='allow-guest=false'

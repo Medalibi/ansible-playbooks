@@ -1,0 +1,16 @@
+---
+- name: Windows Service Management
+  hosts: ThinClientTR1 ThinClientTR2            #ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+   - win_service:
+       name: wuauserv
+#       start_mode: auto
+#       state: started
+
+       start_mode: disabled
+       state: stopped
+
+
+## Option for Start_mode: 	auto		manual		disabled
+##      Option for State:	started		stopped		restarted

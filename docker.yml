@@ -1,0 +1,10 @@
+---
+- name: Make software sheck and update 
+  hosts: TR1 TR2				# TR1 TR2 local
+  gather_facts: no
+  tasks:
+   - name: docker update
+     shell: docker pull rjmw/galaxy-dims-workflow-training
+
+   - name: Docker remove old image
+     shell: docker rmi -f 60300faf0ef8    

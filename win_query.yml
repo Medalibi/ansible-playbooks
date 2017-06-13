@@ -1,0 +1,16 @@
+---
+- name : Service Query 
+  hosts: TestThin            #ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Query Windows Update service status
+      raw: (get-service wuauserv | select status | Format-Wide | Out-String).trim()
+      register: output
+
+    - name: Query Windows Update service startup
+      raw:  (Get-WmiObject -Class Win32_Service -Property StartMode -Filter "Name='wuauserv'" | select StartMode | Format-Wide | Out-String).trim()
+      register: out
+
+    - debug: var=output.stdout
+    - debug: var=out.stdout
+

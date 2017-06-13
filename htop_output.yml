@@ -1,0 +1,9 @@
+---
+- name: Check Nvidia GPU level
+  hosts: TR2
+  gather_facts: no
+  tasks:
+    - shell: echo q | htop | aha --black --title $(hostname -s) --line-fix --no-header > htop.html		##echo q | htop 
+      register: ps
+
+    - debug: var=ps.stdout_lines
