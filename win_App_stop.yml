@@ -1,0 +1,13 @@
+---
+- name: Close a currently running application in Windows hosts
+  hosts: ThinClientTR2
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Stop the running process gracefully
+#      raw: Get-Process vmware-view | Foreach-Object { $_.CloseMainWindow() | Out-Null } | stop-process –force
+      raw: Stop-Process -processname vmware-view -force
+      register: output
+
+    - debug: var=output
+

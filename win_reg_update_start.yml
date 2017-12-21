@@ -1,0 +1,26 @@
+---
+- name : Windows Update Register Enabler
+  hosts: ThinClient
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Making sure that all Windows update services are running
+      win_service:
+        name: wuauserv
+        start_mode: auto
+        state: started
+
+    - win_service:
+       name: bits
+       start_mode: auto
+       state: started
+
+    - name: Enable auto update registery 
+      win_shell:Set-ItemProperty -Path "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate -Value 0
+
+    - win_shell:Set-ItemProperty -Path "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name AUOptions -Value 4
+
+    - win_shell:Set-ItemProperty -Path "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name ScheduledInstallDay -Value 0
+
+    - win_shell:Set-ItemProperty -Path "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name ScheduledInstallTime -Value 3
+

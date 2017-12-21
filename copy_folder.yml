@@ -1,18 +1,21 @@
 ---
 - name: Copy files/folder to remote machines
-  hosts: TR1 TR2
+  hosts: TR2
   gather_facts: no
   tasks:
-   - copy: 
-       src: "/media/penelopeprime/EMBO_Metabolomics/Day 3/Networks_Jourdan/MetaNetter.jar"
-       dest: /usr/local/Cytoscape_v2.8.3/plugins/ 
-       owner: root 
-       mode: 0777
+#   - copy: 
+#       src: "/media/penelopeprime/Gene_fusion"
+#       dest: /home/training/
+#       remote_src: True 
+#       owner: training 
+#       mode: 0777
     
    - copy: 
-       src: "/media/penelopeprime/EMBO_Metabolomics/Day 3/Networks_Jourdan" 
-       dest: /home/training/ 
-       owner: training 
+       src: "/media/penelopeprime/Archive/pythonrc-minimal" 
+       dest: /home/training/.pythonrc-minimal
+#       remote_src: True
+       owner: training
        mode: 0777
 
-   - shell: chmod 777 -R /home/training/Networks_Jourdan
+#   - shell: chmod 777 -R /home/training/Gene_fusion
+   - shell: chmod 777 -R /home/training/.pythonrc-minimal

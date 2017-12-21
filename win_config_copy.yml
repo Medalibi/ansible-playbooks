@@ -1,0 +1,59 @@
+---
+- name: Copy configruation files to a Windows hosts
+  hosts: ThinClient
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Copying configuration file
+      win_copy: 
+        src: /media/penelopeprime/Archive/NSCP_scripts/nsclient.ini
+        dest: C:\Program Files\NSClient++\nsclient.ini
+
+#    - name: Copying updates scripts 1
+#      win_copy:
+#        src: /media/penelopeprime/Archive/NSCP_scripts/check_windows_updates.ps1
+#        dest: C:\Program Files\NSClient++\scripts\check_windows_updates.ps1
+
+#    - name: Copying updates scripts 2
+#      win_copy:
+#        src: /media/penelopeprime/Archive/NSCP_scripts/TrapGen.exe
+#        dest: C:\Program Files\NSClient++\scripts\TrapGen.exe
+
+#    - name: Copying updates scripts 3
+#      win_copy:
+#        src: /media/penelopeprime/Archive/NSCP_scripts/win_update_trapsend.bat
+#        dest: C:\Program Files\NSClient++\scripts\win_update_trapsend.bat
+
+
+#    - name: Copying updates scripts 4
+#      win_copy:
+#        src: /media/penelopeprime/Archive/NSCP_scripts/windows_updates2.ps1
+#        dest: C:\Program Files\NSClient++\scripts\windows_updates2.ps1
+
+#    - name: Copying updates scripts 5
+#      win_copy:
+#        src: /media/penelopeprime/Archive/NSCP_scripts/restart_service.ps1
+#        dest: C:\Program Files\NSClient++\scripts\restart_service.ps1
+
+#    - name: Copying updates scripts 6
+#      win_copy:
+#        src: /media/penelopeprime/Archive/NSCP_scripts/check_time.vbs
+#        dest: C:\Program Files\NSClient++\scripts\check_time.vbs
+
+    - name: Set Execution Policy
+#      raw: Start-Process powershell -verb RunAs -ArgumentList 'Set-ExecutionPolicy ByPass -File C:\Program Files\NSClient++\scripts\check_windows_updates.ps1 -Force'
+      raw: Start-Process powershell -verb RunAs -ArgumentList 'Set-ExecutionPolicy RemoteSigned -Force'
+#      raw: Start-Process powershell -verb RunAs -ArgumentList 'Set-ExecutionPolicy Unrestricted -Force'
+#      raw: Start-Process powershell -verb RunAs -ArgumentList 'Set-ExecutionPolicy Restricted -Force'
+
+#    - name: Get Execution Policy
+#      raw: Start-Process powershell -verb RunAs -ArgumentList 'Get-ExecutionPolicy -force' 
+#      register: output
+
+#    - debug: var=output
+
+    - name: Restart the service to apply the configuration change
+      win_service:
+        name: nscp
+        start_mode: auto
+        state: restarted

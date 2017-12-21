@@ -1,6 +1,7 @@
 ---
 - name : Install MSI packages 
-  hosts: r2u31            #ThinClientTR2 ThinClientTR1
+  hosts: ThinClient
+#ThinClientTR2 ThinClientTR1
   gather_facts: no
   tasks:
     - name: Copy the MSI file to the host

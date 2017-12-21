@@ -1,6 +1,6 @@
 ---
 - name: Windows Power control
-  hosts: ThinClientTR1 ThinClientTR2
+  hosts: ThinClientTR1 #ThinClientTR2
   gather_facts: no
   tasks:
     - name: Shutdown all machines  

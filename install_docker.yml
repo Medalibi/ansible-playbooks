@@ -1,0 +1,37 @@
+---
+- name: Install packages Docker CE on the host
+  gather_facts: no
+  hosts: TR1 TR2
+  tasks:
+   - name: Update the software cache
+     apt: update_cache=yes
+
+   - name: Upgrade all software
+     apt: upgrade=dist
+
+   - name: Install cwltools
+     shell: pip install cwltool
+
+   - name: Add Docker’s official GPG key
+     shell: apt install linux-image-extra-$(uname -r)
+
+   - name : Install 1st batch of packages for STAMP
+     apt : name={{item}} state=installed update_cache=true
+     with_items:
+       - linux-image-extra-virtual
+       - apt-transport-https
+       - ca-certificates 
+       - curl
+       - software-properties-common
+   
+   - name: Add Docker’s official GPG key
+     shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+   - name: Add the repo to the source.list
+     shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+   - name: Install Docker CE
+     apt: pkg=docker-ce state=installed update_cache=true
+
+   - name: Add the Training to docker group
+     shell: usermod -aG docker training

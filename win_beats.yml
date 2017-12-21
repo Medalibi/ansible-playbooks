@@ -1,0 +1,70 @@
+---
+- name : Install ElacticSearch Beats 
+  hosts: r1u22            #ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Copy the Beats archive to the host
+      win_copy:
+        src: /media/penelopeprime/Archive/Beats.zip
+        dest: C:\Beats.zip
+
+    - name: Extract the Beats archive
+      win_unzip:
+        src: C:\Beats.zip
+        dest: C:\
+
+    - name: Delete the zip Archive
+      win_file: path=C:\Beats.zip state=absent
+
+#    - name: Install HeartBeat
+#      raw: Start-Process powershell -ExecutionPolicy UnRestricted -File 'c:\Beats\heartbeat\install-service-heartbeat.ps1'
+
+    - name: Install HeartBeat
+      win_shell: c:\Beats\heartbeat\install-service-heartbeat.ps1
+
+#    - name: Install Nmap and WinPcap
+#      raw : C:\Beats\nmap-setup.exe /S
+
+    - name: Install PacketBeat
+      win_shell: c:\Beats\packetbeat\install-service-packetbeat.ps1
+        
+    - name: Install MetricBeat
+      win_shell: c:\Beats\metricbeat\install-service-metricbeat.ps1
+
+    - name: Install FileBeat
+      win_shell: c:\Beats\filebeat\install-service-filebeat.ps1
+
+    - name: Install WinlogBeat
+      win_shell: c:\Beats\winlogbeat\install-service-winlogbeat.ps1
+
+    - name: Loading HeartBeat Template
+      raw : Invoke-WebRequest -Method Put -InFile c:\Beats\heartbeat\heartbeat.template.json -Uri  http://10.7.243.29:9200/_template/heartbeat?pretty -ContentType application/json
+
+    - name: Loading PacketBeat Template
+      raw : Invoke-WebRequest -Method Put -InFile c:\Beats\packetbeat\packetbeat.template.json -Uri  http://10.7.243.29:9200/_template/packetbeat?pretty -ContentType application/json
+
+    - name: Loading MetricBeat Template
+      raw : Invoke-WebRequest -Method Put -InFile c:\Beats\metricbeat\metricbeat.template.json -Uri  http://10.7.243.29:9200/_template/metricbeat?pretty -ContentType application/json
+
+    - name: Loading FileBeat Template
+      raw : Invoke-WebRequest -Method Put -InFile c:\Beats\filebeat\filebeat.template.json -Uri  http://10.7.243.29:9200/_template/filebeat?pretty -ContentType application/json
+
+    - name: Loading WinlogBeat Template
+      raw : Invoke-WebRequest -Method Put -InFile c:\Beats\winlogbeat\winlogbeat.template.json -Uri  http://10.7.243.29:9200/_template/winlogbeat?pretty -ContentType application/json
+
+    - name: Starting HeartBeat service
+      raw : Start-Service heartbeat
+
+    - name: Starting PacketBeat service
+      raw : Start-Service packetbeat
+
+    - name: Starting MetricBeat service
+      raw : Start-Service metricbeat
+
+    - name: Starting FileBeat service
+      raw : Start-Service filebeat
+
+    - name: Starting WinlogBeat service
+      raw : Stop-Service winlogbeat
+
+

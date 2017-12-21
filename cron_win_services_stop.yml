@@ -1,0 +1,26 @@
+---
+- name: Stop Windows Update Service
+  hosts: ThinClient
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+   - win_service:
+       name: wuauserv
+       start_mode: disabled
+       state: stopped
+
+   - win_service:
+       name: bits
+       start_mode: disabled
+       state: stopped
+
+#   - win_service:
+#       name: cryptsvc
+#       start_mode: disabled
+#       state: stopped
+
+#   - name: Disable Windows Updates 
+#New-RegKey -Key "SOFTWARE\Policies\Microsoft\Windows" -Name "WindowsUpdate\AU" -PassThru | Set-RegString -Value NoAutoUpdate -Data 1 -Force -PassThru
+
+## Option for Start_mode: 	auto		manual		disabled
+##      Option for State:	started		stopped		restarted

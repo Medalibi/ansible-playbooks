@@ -1,0 +1,32 @@
+---
+- name: Install Cytoscape from a binary file
+  hosts: TR2
+##TR1 TR2
+  gather_facts: no
+  tasks:
+   - name: Copy Cytoscape Installer
+     shell: rsync -rup --chmod=777 /media/penelopeprime/Archive/Cytoscape_3_5_1_unix.sh /usr/local
+###Cytoscape_3_5_1_unix.sh
+
+   - name: Creates Cytoscape installtion directory
+     file: path=/usr/local/Cytoscape3_5_1 state=directory owner=training mode=0777
+
+   - name : Install java 8
+     apt : pkg=default-jre state=installed update_cache=true
+
+   - name : Install Cytoscape
+     shell: /usr/local/Cytoscape_3_5_1_unix.sh -q -dir /usr/local/Cytoscape3_5_1
+     register: ps
+
+   - debug: var=ps.stdout_lines
+
+   - name : create Sym link for Cytoscape
+     shell: ln -s /usr/local/Cytoscape3_5_1/Cytoscape /usr/local/bin/Cytoscape
+
+   - name : Set Desktop icon for Cytoscape
+     copy : src=/media/penelopeprime/Archive/name.desktop dest=/home/training/Desktop/Cytoscape.desktop owner=training mode=0777
+   - lineinfile : dest=/home/training/Desktop/Cytoscape.desktop regexp='^Name=' line='Name=Cytoscape3.5.1'
+   - lineinfile : dest=/home/training/Desktop/Cytoscape.desktop regexp='^Exec=' line='Exec=/usr/local/Cytoscape3_5_1/Cytoscape'
+   - lineinfile : dest=/home/training/Desktop/Cytoscape.desktop regexp='^Icon=' line='Icon=/usr/local/Cytoscape3_5_1/framework/cytoscape_logo_512.png'
+   - lineinfile : dest=/home/training/Desktop/Cytoscape.desktop regexp='^Terminal=' line='Terminal=false'
+

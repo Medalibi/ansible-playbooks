@@ -1,13 +1,17 @@
 ---
 - name: Install packages using apt-get
   gather_facts: no
-  hosts: TR1
+  hosts: TR1 TR2
   tasks:
-   - name: fix flash plugins error
-     shell: pkexec /usr/lib/update-notifier/package-data-downloader
-   - shell: pkill update-notifier
+#   - name: fix flash plugins error
+#     shell: pkexec /usr/lib/update-notifier/package-data-downloader
+#   - shell: pkill update-notifier
 
+   - name: Install pymol
+     apt: pkg=pymol state=installed update_cache=true
 
+#   - name: fix flash plugins error
+#     shell: pkexec /usr/lib/update-notifier/package-data-downloader
 
 #   - name: Update the software cache
 #     apt: update_cache=yes

@@ -1,0 +1,32 @@
+---
+- name: Configure dependecies and run script
+  gather_facts: no
+  hosts: TR1
+  tasks:
+   - name: Remove Old Data folder
+     shell: rm -r /home/training/EBI_NGS_Assembly
+
+   - name: Get the github scripts
+     git: repo=https://github.com/fg6/EBI_NGS_Assembly.git dest=/home/training/EBI_NGS_Assembly
+     become: yes
+     become_user: training
+
+#   - name: Git pull into folder
+#     shell: cd /home/training/EBI_NGS_Assembly; git pull 
+#     become: true
+#     become_user: training
+   
+   - name: set rights
+     shell: chmod 755 -R /home/training/EBI_NGS_Assembly
+   
+   - name: set ownership
+     shell: chown training -R /home/training/EBI_NGS_Assembly
+
+#   - name: set Artemis
+#     apt: pkg=artemis state=installed update_cache=true 
+  
+   - name: run the installation script
+     shell: cd /home/training/EBI_NGS_Assembly; ./scripts/install.sh
+     become: true
+     become_user: training
+

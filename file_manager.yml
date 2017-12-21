@@ -1,11 +1,16 @@
 ---
 - name: Manage files/folder into remote machines
-  hosts: TR1
+  hosts: TR1 ExternalTR
   gather_facts: no
   tasks:
 #   - file:
-#      path: /etc/apt/sources.list.d/bin_linux_ubuntu.list
+#      path: "{{item}}"
 #      state: absent
+#     with_fileglob:
+#      - /home/training/*.zip
+
+#   - name: Delete multipel files
+#     shell: rm /home/training/*.zip
 
 #   - file:
 #      path: /usr/local/MATLAB/R2016b/licenses
@@ -13,22 +18,39 @@
 #      recurse: yes
 
 
-   - copy: 
-       src: /media/penelopeprime/course-assoc 					###"{{ item }}"
-       dest: /home/training/
+#   - copy: 
+#       src: /media/penelopeprime/Metagenomics_Bioinformatics_Oct17/Day_1/QC_session
+
+#   - shell: rsync -ru --progress /media/penelopeprime/Metagenomics_Bioinformatics_Oct17/Day_1/Sequence_and_metadata_submission_to_ENA/ENA_submission_material /home/mh_user/
+
+
+   - shell: rsync -ru --progress /media/penelopeprime/High_Throughput_Seq_Data_Nov17/AaronSingleCell /home/training/
+
+###"{{ item }}"
+#       dest: /home/training/
 #       remote_src: True
-       owner: training 
-       mode: 0777
+#       owner: training 
+#       mode: 0777
 
 #     with_fileglob: /media/penelopeprime/NA128*
 
-#   - shell: chown training -R /home/training/NA128*
 
-   - file: 
-      path: /home/training/course-assoc						####"{{ item }}"
-      mode: 0777
-      owner: training 
-      state: directory
-      recurse: yes
+   - shell: chown training -R /home/training/AaronSingleCell
+
+   - shell: chmod 777 -R /home/training/AaronSingleCell
+
+
+#   - shell: chown mh_user -R /home/mh_user/ENA_submission_material
+#   - shell: chmod 777 -R /home/mh_user/ENA_submission_material
+
+#   - shell: rm -r /home/mh_user/submission_material
+
+
+#   - file: 
+#      path: /home/training/course-assoc						####"{{ item }}"
+#      mode: 0777
+#      owner: training 
+#      state: directory
+#      recurse: yes
 
 #     with_fileglob: /home/training/NA128*

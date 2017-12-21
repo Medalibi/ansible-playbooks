@@ -3,10 +3,13 @@
   gather_facts: no
   hosts: TR2
   tasks:
-   - name: Create the Ubuntu default Desktop icons 
-     shell: gsettings set org.gnome.nautilus.desktop home-icon-visible  true; gsettings set org.gnome.nautilus.desktop volumes-visible true; gsettings set org.gnome.nautilus.desktop trash-icon-visible true
-     become: true
-     become_user: training
+   - name: Disable the firewall UFW
+     shell: ufw disable
+
+#   - name: Create the Ubuntu default Desktop icons 
+#     shell: gsettings set org.gnome.nautilus.desktop home-icon-visible  true; gsettings set org.gnome.nautilus.desktop volumes-visible true; gsettings set org.gnome.nautilus.desktop trash-icon-visible true
+#     become: true
+#     become_user: training
 
 #   - name : shell command
 #     shell : export "PATH=/media/penelopeprime/anaconda2/bin:$PATH"
@@ -21,6 +24,19 @@
 #     shell: pip install limix
 #     become: true
 #     become_user: training
+
+#   - name : activate matlab
+#     shell: /usr/local/MATLAB/R2017a/bin/activate_matlab.sh -propertiesFile /media/penelopeprime/Archive/activate.ini
+#     become: true
+#     become_user: training
+#     shell: chmod 777 -R /usr/local/MATLAB
+#     register: out
+
+#   - debug: var=out.stdout
+
+#    - shell: cp /media/penelopeprime/Archive/ActivateMatlab.desktop /home/training/Desktop/ 
+#    - shell: chmod 777 -R /home/training/Desktop/ActivateMatlab.desktop
+
 
 #   - shell : echo "'export PATH=/media/penelopeprime/anaconda2/bin:$PATH'" >> /etc/bash.bashrc
 

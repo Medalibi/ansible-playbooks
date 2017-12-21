@@ -1,12 +1,16 @@
 ---
 - name: File Modifier for Linux system
-  hosts: TR2
+  hosts: TR1 ExternalTR
+## ExternalTR TR1 TR2
   gather_facts: no
   tasks:
    - name : Changing the line in the file
      #replace : dest=/usr/local/interproscan-5.19-58.0/interproscan.sh regexp='interproscan-5.jar' replace='/usr/local/interproscan-5.19-58.0/interproscan-5.jar'
      #lineinfile : dest=/usr/local/interproscan-5.19-58.0/interproscan.sh regexp='^USER_DIR=' line='USER_DIR=/usr/local/interproscan-5.19-58.0/'
-     lineinfile : dest=/etc/vmware/viewagent-custom.conf regexp='^#Subnet=192.168.1.0/24' line='Subnet=10.7.243.0/24'
+     #lineinfile : dest=/etc/vmware/viewagent-custom.conf regexp='^#Subnet=192.168.1.0/24' line='Subnet=10.7.243.0/24'
+     lineinfile : dest=/usr/local/Trimmomatic-0.36/trimmomatic-0.36.sh regexp='^cd /usr/local/Trimmomatic-0.36' line='#cd /usr/local/Trimmomatic-0.36'
+
+
 
    #- name : Changing the 2nd line in file
    #  lineinfile : dest=/usr/local/interproscan-5.19-58.0/interproscan.sh regexp='dirname' line='cd /usr/local/interproscan-5.19-58.0/'

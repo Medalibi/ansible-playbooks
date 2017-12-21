@@ -1,8 +1,16 @@
 ---
 - name : Execute Windows Update 
-  hosts: ThinClientTR1 ThinClientTR2                  #ThinClientTR1 ThinClientTR2
+  hosts: r1u29
+#ThinClientTR1 ThinClientTR2
   gather_facts: no
   tasks:
+    - name: make sure that the  Windows update service is running
+      win_service:
+        name: wuauserv
+        start_mode: delayed
+        state: started
+      ignore_errors: yes
+
     - name: Executing Windows Update 
       win_updates: 
         category_names: 
@@ -16,8 +24,9 @@
 #          - Tools
           - Updates
         state: installed
-
+      ignore_errors: yes
       register: update_result
+
     - win_reboot:
       when: update_result.reboot_required
 

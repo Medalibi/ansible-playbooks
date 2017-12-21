@@ -1,0 +1,48 @@
+---
+- name : Ansible Playbook to patch and update Windows hosts
+  hosts: ThinClientTR1 ThinClientTR2 ThinClient
+#ThinClientTR1 ThinClientTR2
+#  serial: 1
+  gather_facts: no 
+  tasks:
+    # Make sure the Windows Update service is started
+    - name: Start Windows Update service
+      win_service:
+       name: wuauserv
+       start_mode: delayed
+       state: started
+
+    # Check if there are missing updates
+    - block:
+        - name: Check for missing updates
+          win_updates: 
+            state: searched
+          register: update_count
+          ignore_errors: yes
+ 
+      #Install missing updates only if at least one is missing
+    - block:
+        - name: Install missing updates
+          win_updates:
+            category_names:
+              - Application
+              - Connectors
+              - DefinitionUpdates
+              - DeveloperKits
+              - FeaturePacks
+              - Guidance
+              - ServicePacks
+              - Tools
+              - UpdateRollups
+              - CriticalUpdates
+              - SecurityUpdates
+          ignore_errors: yes
+          register: update_result
+        - name: Reboot, if needed
+          win_reboot:
+            msg: Reboot initiated by Ansible
+          when: update_result.reboot_required
+          ignore_errors: yes
+      when: update_count.found_update_count|int >= 1
+
+ 

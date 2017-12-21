@@ -3,18 +3,36 @@
   hosts: TR2
   gather_facts: no
   tasks:
+   - shell: dpkg --configure -a
+
    - name: Install a list of packages
-     apt: pkg={{item}} state=installed update_cache=true
+     apt: pkg={{item}} state=installed
      with_items:
-       - nvidia-352
-       - nvidia-settings
-#       - r-cran-tkrplot
-#       - libpq-dev
-     register: output	
+#       - build-essential
+#       - freeglut3
+#       - freeglut3-dev
+#       - python3-numpy
+#       - python3-dev
+       - python-dev
+       - libglew-dev
+       - libfreetype6-dev
+       - libmsgpack-dev
+#       - python-pmw 
+       - zlib1g-dev
+       - zlibc
+       - bzip2
+       - libncurses5
+ #      - libncurses5-dev
+
+   - name: Install openssh server
+     apt: pkg=openssh-server state=installed update_cache=true
 
 
-#   - name: Install pymol
-#     apt: pkg=pymol state=installed update_cache=true
+#     register: output	
+
+
+#   - name: Install openssh server
+#     apt: pkg=openssh-server state=installed update_cache=true
 
 
 
@@ -23,20 +41,20 @@
 #  roles: apt-install
 #  - apt_install__base_packages= aptitude
 
-   - name: check if a reboot is required
-     shell: "[ -f /var/run/reboot-required ]"
-     failed_when: False
-     register: reboot_required
-     changed_when: reboot_required.rc == 0
-     notify: reboot
+#   - name: check if a reboot is required
+#     shell: "[ -f /var/run/reboot-required ]"
+#     failed_when: False
+#     register: reboot_required
+#     changed_when: reboot_required.rc == 0
+#     notify: reboot
 
-  handlers:
-   - name: reboot
-     command: shutdown -r now "Ansible reboot triggred after update"
-     async: 0
-     poll: 0
-     ignore_errors: true
+#  handlers:
+#   - name: reboot
+#     command: shutdown -r now "Ansible reboot triggred after update"
+#     async: 0
+#     poll: 0
+#     ignore_errors: true
     
 
-   - debug: var=output.stdout
+#   - debug: var=output.stdout
 

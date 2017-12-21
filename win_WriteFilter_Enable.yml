@@ -1,0 +1,21 @@
+---
+- name : HPDM Enable the HP Write Filter 
+  hosts: ThinClient ThinClientTR2 ThinClientTR1
+# ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Execute UWFMgr to enable Write Filter
+#      win_shell: uwfmgr.exe get-config
+      win_shell: uwfmgr.exe filter enable
+#      win_shell: uwfmgr.exe filter disable
+      args:
+        executable: cmd
+#      register: output
+
+#    - name: Restart machines if HPDM operation success
+#      win_reboot:
+#        msg: Reboot initiated by Ansible to apply HP Write Filter change.
+#        pre_reboot_delay_sec: 10
+#      when: output.rc == 0
+
+#    - debug: var=output.changed

@@ -1,0 +1,27 @@
+---
+- name: Update Windows softwares using Chocolatey
+  hosts: r1u29
+#ThinClientTR1 ThinClientTR2 
+  gather_facts: no
+  tasks:
+
+#    - name: get choco version
+#      win_command: choco
+#      register: choco_out
+#      failed_when: no
+#      changed_when: no
+
+#    - win_command: choco upgrade -y chocolatey
+#      when: (choco_out.stdout_lines|map('regex_search','^Chocolatey v\d+(\.\d+)+$')|select('string')|list)[0].split()[1]|version_compare('v0.9.10', '<')
+
+#    - debug: var=choco_out.stdout
+
+    - win_command: choco upgrade -y firefox
+
+
+#    - name: Update Chocolatey
+#      win_chocolatey:
+#        name: chocolatey
+#        state: latest
+#        upgrade: yes
+

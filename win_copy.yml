@@ -1,13 +1,17 @@
 ---
 - name: Copy files/folders on Windows
-  hosts: ThinClientTR1
+  hosts: windowsTR1
   gather_facts: no
   tasks:
     - name: Copy Files
 #      win_copy: src=/media/penelopeprime/Scripts/AtomSetup.exe dest=C:\SWSETUP\
 
-      win_copy: 
-        src=/media/penelopeprime/Ensembl_Bitesized_Workshop_May17/Survey.html
-        dest=C:\Users\Public\Desktop\Survey.html
+#      win_copy: 
+#        src=/media/penelopeprime/Ensembl_Bitesized_Workshop_May17/Survey.html
+#        dest=C:\Users\Public\Desktop\Survey.html
+
+      win_copy:
+        src=/media/penelopeprime/Archive/TOPPView.lnk
+        dest=C:\Users\Public\Desktop\TOPPView.lnk
 
 

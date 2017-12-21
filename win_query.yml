@@ -1,6 +1,7 @@
 ---
 - name : Service Query 
-  hosts: TestThin            #ThinClientTR2 ThinClientTR1
+  hosts: ThinClient
+#ThinClientTR2 ThinClientTR1
   gather_facts: no
   tasks:
     - name: Query Windows Update service status

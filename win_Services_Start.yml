@@ -1,0 +1,64 @@
+---
+- name: Start Windows Update Services
+  hosts: ThinClientTR2
+# ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+   - name: Make sure that the WindowsUpdate key is on teh registry
+     win_regedit:
+       path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+       state: present
+     ignore_errors: yes
+
+   - name: Add register to enable AutoUpdate
+     win_regedit:
+       path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+       name: NoAutoUpdate
+       data: 0
+       type: dword
+     ignore_errors: yes
+
+   - name: Add register to auto download and schedule the install
+     win_regedit:
+       path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+       name: AUOptions
+       data: 4
+       type: dword
+     ignore_errors: yes
+
+   - name: Add register for schedule install day
+     win_regedit:
+       path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+       name: ScheduledInstallDay
+       data: 0
+       type: dword
+     ignore_errors: yes
+
+   - name: Add register to shedule install time
+     win_regedit:
+       path: HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+       name: ScheduledInstallTime
+       data: 3
+       type: dword
+     ignore_errors: yes
+
+   - win_service:
+       name: wuauserv
+       start_mode: delayed
+       state: started
+
+
+
+
+
+
+#   - win_service:
+#       name: bits
+#       start_mode: delayed
+#       state: started
+
+#       start_mode: disabled
+#       state: stopped
+
+## Option for Start_mode: 	auto		manual		disabled
+##      Option for State:	started		stopped		restarted

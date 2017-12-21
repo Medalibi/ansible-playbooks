@@ -1,0 +1,66 @@
+---
+- name: Fix Windows Update freeze and non-respondence
+  hosts: r1u29 
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+#    - name: Restart the host to free the locked Update files
+##      win_reboot:
+#        msg: Reboot initiated by Ansible
+
+    - win_service:
+       name: wuauserv
+       start_mode: disabled
+       state: stopped
+      ignore_errors: yes
+
+    - win_service:
+       name: bits
+       start_mode: disabled
+       state: stopped
+      ignore_errors: yes
+
+    - win_service:
+       name: cryptsvc
+       start_mode: disabled
+       state: stopped
+      ignore_errors: yes
+
+#    - name: Move old corrupted conf file
+#      raw: ren C:\Windows\System32\Catroot2 Catroot2.old
+
+#    - name: Move corrupted Update related files
+#      raw: ren C:\Windows\SoftwareDistribution SoftwareDistribution.old
+
+    - name: Remove corrupted Update related files
+      raw: Remove-Item C:\Windows\SoftwareDistribution\Download\* -recurse
+      ignore_errors: yes
+
+#    - name: Remove corrupted Update related files
+#      raw: Remove-Item C:\Windows\SoftwareDistribution\* -recurse
+
+#    - name: Start Update related services
+#      raw: net start wuauserv; net start bits; net start cryptsvc
+
+    - win_service:
+       name: wuauserv
+       start_mode: auto
+       state: started
+      ignore_errors: yes
+
+    - win_service:
+       name: bits
+       start_mode: auto
+       state: started
+      ignore_errors: yes
+
+    - win_service:
+       name: cryptsvc
+       start_mode: auto
+       state: started
+      ignore_errors: yes
+
+    - name: Restart the host to refresh the system
+      win_reboot:
+        msg: Reboot initiated by Ansible
+      ignore_errors: yes

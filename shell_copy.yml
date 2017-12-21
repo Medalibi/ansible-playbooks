@@ -1,0 +1,13 @@
+---
+- name: Copy files/folder to remote machines using rsync
+  hosts: TR1
+  gather_facts: no
+  tasks:
+   - name: Copy 1st set of folders
+     shell: rsync -rup --chmod=777 /media/penelopeprime/Gene_fusion /home/training/
+    
+   - name: Copy 2nd set of folders 
+     shell: rsync -rup --chmod=777 /media/penelopeprime/RNA-seq /home/training/
+
+   - shell: chmod 777 -R /home/training/Gene_fusion
+   - shell: chmod 777 -R /home/training/RNA-seq

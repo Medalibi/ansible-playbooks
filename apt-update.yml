@@ -1,0 +1,19 @@
+---
+- name: Apt update
+  hosts: TR2
+  gather_facts: no
+  tasks:
+   - name: Update the software cache
+     apt: update_cache=yes
+
+   - name: Upgrade all software
+     apt: upgrade=dist
+
+   - name: Install nvidia driver
+     apt: pkg=nvidia-340 state=installed
+
+   - name: Install nvidia settings
+     apt: pkg=nvidia-settings state=installed
+
+   - name: clean stuff
+     shell: apt autoremove; apt-get autoclean

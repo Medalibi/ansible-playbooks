@@ -1,0 +1,52 @@
+---
+- name : Windows Update Playbook 
+  hosts: ThinClientTR1 ThinClientTR2 ThinClient
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Making sure that all Windows update services are running
+      win_service:
+        name: wuauserv
+        start_mode: delayed
+        state: started
+
+#    - win_service:
+#       name: bits
+#       start_mode: delayed
+#       state: started
+
+#    - win_service:
+#       name: cryptsvc
+#       start_mode: auto
+#       state: started
+
+    - name: Search and Install Windows Updates 
+      win_updates: 
+        category_names: 
+          - SecurityUpdates
+          - CriticalUpdates
+          - UpdateRollups
+          - DefinitionUpdates
+          - FeaturePacks
+          - Application
+          - ServicePacks
+          - Tools
+          - Updates
+        state: installed
+      ignore_errors: yes
+      register: update_result
+
+    - name: Restart hosts that require reboot after update
+      win_reboot:
+        msg: Reboot initiated by Ansible
+      when: update_result.reboot_required
+
+    - win_reboot:
+        msg: Reboot initiated by Ansible
+      when: update_result.failed 
+      ignore_errors: yes
+
+#    - debug: var=update_result.updates.title
+#    - debug: var=update_result.updates.installed
+#    - debug: var=update_result.installed_update_count
+    - debug: var=update_result   

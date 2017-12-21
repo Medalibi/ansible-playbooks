@@ -1,0 +1,20 @@
+---
+- name : Install exe packages 
+  hosts: r2u31 ThinClientTR1            #ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Copy the exe folder to the host
+      win_copy:
+        src=/media/penelopeprime/Archive/Simplot/setup.exe
+        dest=C:\setup.exe
+
+    - name: Install an exe file with arguments
+      raw: Start-Process -Wait -FilePath "C:\setup.exe" -ArgumentList '/S /v/qn'
+
+    - name: Delete the exe file
+      win_file: path=C:\setup.exe state=absent
+
+    - name: Copy the lnk file to the host Desktop
+      win_copy:
+        src=/media/penelopeprime/Archive/Simplot/SimPlot_3.5.1.lnk
+        dest=C:\Users\Public\Desktop\SimPlot_3.5.1.lnk
