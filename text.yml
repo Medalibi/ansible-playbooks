@@ -1,0 +1,10 @@
+---
+- name: get a ping result
+  gather_facts: no
+  hosts: penelopebackup
+  tasks:
+   - name: restart machine
+     shell: cat /etc/hostname
+     register: out
+
+   - debug: var=out.stdout
