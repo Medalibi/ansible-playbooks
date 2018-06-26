@@ -1,7 +1,7 @@
 ---
 - name: get a ping result
   gather_facts: no
-  hosts: penelopebackup
+  hosts: VM-19
   tasks:
    - name: restart machine
      shell: cat /etc/hostname
