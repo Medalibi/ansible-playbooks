@@ -25,7 +25,7 @@
        mode: 0777
 
    - name: Install and register the Horizon ViewAgent with the Connection server
-     shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n $(hostname -s) -b broker1.courses.ebi.ac.uk -d courses.ebi.ac.uk -u linuxviewadmin -p fridge 
+     shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n $(hostname -s) -b broker1.courses.ebi.ac.uk -d courses.ebi.ac.uk -u linuxviewadmin -p password 
      register: HorizonInstallLog
 
    - name: Collecting installation logs
