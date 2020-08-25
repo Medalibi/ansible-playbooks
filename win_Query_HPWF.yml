@@ -1,0 +1,16 @@
+---
+- name : E Enable the HP Write Manager 
+  hosts: spare2_16 spare1_16
+# ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Execute EWFMGR to enable Write Filter
+#      win_shell: HpWriteFCtrl.exe -getusage
+      win_shell: HpWriteFCtrl.exe -getmarkers "C:"
+#      win_shell: HpWriteFCtrl.exe -enable
+#      win_shell: HpWriteFCtrl.exe -disable
+#      args:
+#        executable: cmd
+      register: output
+
+    - debug: var=output.stdout_lines

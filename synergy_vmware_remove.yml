@@ -1,0 +1,46 @@
+---
+- name: Remove linked-clone VMware VMs from cluster
+  hosts: localhost
+  gather_facts: yes
+  vars:
+##########################################################################
+    coursevm: FullCourseSSDVM
+##########################################################################
+
+  tasks:
+    - name: Stop the VMs
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        datacenter: "{{ datacenter }}"
+        #cluster: "{{ cluster }}"
+
+        name: "{{ coursevm }}-{{ item }}"
+        state: poweredoff
+      with_sequence: start=1 end=32 format=%02d
+      #stride=2
+      delegate_to: localhost
+      register: vm
+      async: 120
+      poll: 0
+
+    #- debug:
+    #    var: vm | json_query("results[*].instance.hw_power_status")
+
+    - name: Delete the VMs
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        datacenter: "{{ datacenter }}"
+        #cluster: "{{ cluster }}"
+
+        name: "{{ coursevm }}-{{ item }}"
+        state: absent
+      with_sequence: start=1 end=32 format=%02d
+      delegate_to: localhost
+      async: 120
+      poll: 0

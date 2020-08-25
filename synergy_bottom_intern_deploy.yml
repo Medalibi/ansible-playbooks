@@ -1,0 +1,320 @@
+---
+- name: Clone linked VMware VMs on Bottom-Cluster Internal VLAN
+  hosts: localhost
+  gather_facts: yes
+  vars:
+    cluster: Bottom-Chassis
+    # Top-Chassis Bottom-Chassis
+    datastore: flash-ds1
+    # slower-bigger flash-ds1
+    vlanname: "HL Training Internal"
+    # "HL Training Internal" "HL Training External"
+
+##########################################################################
+    coursevm: ubuntu20intvm
+    vmsnapshot: pre-test
+    sourcevm: Ubuntu20intExp
+##########################################################################
+
+  tasks:
+    - name: Clones the VMs
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        datacenter: "{{ datacenter }}"
+        cluster: "{{ cluster }}"
+
+        linked_clone: yes
+        snapshot_src: "{{ vmsnapshot }}"
+        template: "{{ sourcevm }}"
+        folder: "{{ vmfolder }}"
+        name: "{{ coursevm }}-{{ item }}"
+        state: poweredon
+        wait_for_ip_address: yes
+        #state: present
+        datastore: "{{ datastore }}"
+        networks:
+          - name: "{{ vlanname }}"
+            start_connected: yes
+            type: dhcp
+            domain: "{{ vmdomain }}"
+        #resource_pool: "{{ cluster }}"
+        customization:
+          domain : "{{ vmdomain }}"
+          hostname: "{{ coursevm }}-{{ item }}"
+          timezone: "Europe/London"
+          dns_servers: "{{ vmdnsserver }}"
+      with_sequence: start=1 end=4 format=%02d
+      #stride=2
+      delegate_to: localhost
+      async: 120
+      poll: 0
+      #register: vm
+
+    - name: Wait for last VM to be ready for 2 minutes
+      wait_for:
+        timeout: 120
+      delegate_to: localhost
+
+    - name: Make sure the VMs are powered on
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        datacenter: "{{ datacenter }}"
+        cluster: "{{ cluster }}"
+
+        name: "{{ coursevm }}-{{ item }}"
+        state: poweredon
+      with_sequence: start=1 end=4 format=%02d
+      delegate_to: localhost
+      register: clonedvm
+
+    - debug:
+        var: clonedvm | json_query("results[*].instance.ipv4")
+
+    - name: Add the newly created VMs to the playbook inventory
+      add_host:
+        name: "{{ item.0 }}"
+        instance_name: "{{ item.0 }}"
+        ansible_host: "{{ item.1 }}"
+        groups: BottomChassis
+        brokerip: "{{ brokerip }}"
+        vmdomain: "{{ vmdomain }}"
+        brokeruser: "{{ brokeruser }}"
+        brokerpass: "{{ brokerpass }}"
+      with_together:
+        - "{{ clonedvm | json_query('results[*].instance.hw_name') }}"
+        - "{{ clonedvm | json_query('results[*].instance.ipv4') }}"
+
+    - name: Remove old VMs pool file from inventory
+      file:
+        path: "/Users/alibi/ansible_playbooks/hosts.d/BottomCluster"
+        state: absent
+      ignore_errors: yes
+
+    - name: Fill in VMs pool inventory file
+      blockinfile:
+        path: "/Users/alibi/ansible_playbooks/hosts.d/BottomCluster"
+        create: yes
+        block: |
+          [BottomCluster:vars]
+          remote_user=setup
+          brokerip="{{ brokerip }}"
+          vmdomain="{{ vmdomain }}"
+          brokeruser="{{ brokeruser }}"
+          brokerpass="{{ brokerpass }}"
+
+          [BottomCluster]
+
+    - name: Fill in backup hosts file
+      lineinfile:
+        line: "{{ item.0 }}        ansible_host={{ item.1 }}"
+        path: "/Users/alibi/ansible_playbooks/hosts.d/BottomCluster"
+        insertafter: EOF
+      with_together:
+        - "{{ clonedvm | json_query('results[*].instance.hw_name') }}"
+        - "{{ clonedvm | json_query('results[*].instance.ipv4') }}"
+
+    - name: Wait for SSH to come up
+      wait_for:
+        host: "{{ item }}"
+        port: 22
+        state: started
+        #search_regex: OpenSSH
+        #delay: 5
+      with_items:
+        ###- "{{ groups.BottomChassis }}"
+        - "{{ clonedvm | json_query('results[*].instance.ipv4') }}"
+      connection: local
+
+##########################################################################
+##########################################################################
+- hosts: BottomChassis
+  # BottomChassis
+  name: Configure VMs instances
+  remote_user: setup
+  become: True
+  gather_facts: True
+  tasks:
+    #- name: Make the system faster
+    #  shell: |
+    #    systemctl disable cupsd
+    #    systemctl disable cups-browsed
+    #    systemctl disable avahi-daemon
+
+    - name: Install required packages for the NVIDIA driver installer
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+        - xorg
+        - expect
+        - xterm
+        - mesa-utils
+        - default-jre
+        - i3
+        - libgl1-mesa-dri:i386
+        - libgl1-mesa-glx:i386
+        - pulseaudio
+        - libglvnd-dev
+        - libglvnd-core-dev
+        - libglvnd0
+        - pkg-config
+        - build-essential
+        - x11-xserver-utils
+        - nfs-common
+
+    - name: Configure local DNS to point to the NFS file server
+      #lineinfile : path=/etc/hosts line='10.33.32.20   penelopeprime.training.ebi.ac.uk   penelopeprime'
+      lineinfile : path=/etc/hosts regexp='^10.33.32.20*' line='10.33.32.20   penelopeprime.training.ebi.ac.uk   penelopeprime'
+
+ #   - name: Remove old fileserver DNs configuration
+ #     lineinfile : path=/etc/hosts regexp='^10.7.243.68'  line=' '
+
+    - name: Unmount old NFS fileserver
+      shell: umount /media/penelopeprime
+      ignore_errors: yes
+
+ #   - name: Remove old fileserver DNS configuration
+ #     lineinfile : path=/etc/fstab regexp='^10.7.243.68'  line=' '
+
+    - name: Make sure that the NFS configuration is well set
+      #lineinfile : path=/etc/fstab line='10.33.32.20:/media/shared/Course_Materials /media/penelopeprime    nfs4    defaults     0 0'
+      lineinfile : path=/etc/fstab regexp='^10.33.32.20:/media/shared/Course_Materials*' line='10.33.32.20:/media/shared/Course_Materials /media/penelopeprime    nfs4    defaults     0 0'
+
+    - name: Make sure the NFS folder is there
+      file: path=/media/penelopeprime state=directory mode=0777
+
+    - name: Mount the NFS fileserver
+      shell: mount -a
+
+    - name: VM hostname configuration
+      script: /Users/alibi/ansible_playbooks/hoster {{inventory_hostname}}
+      ignore_errors: yes
+
+    - name: Configrue nvidia driver black list on modprob
+      blockinfile:
+        path: /etc/modprobe.d/blacklist.conf
+        block: |
+          blacklist nouveau
+          blacklist lbm-nouveau
+          options nouveau modeset=0
+
+    - name: Add nouveau blacklist to grub
+      lineinfile: dest=/etc/default/grub regexp='^GRUB_CMDLINE_LINUX=""' line='GRUB_CMDLINE_LINUX="rdblacklist=nouveau"'
+
+    - name: Update Grub settings to apply new blacklist changes
+      shell: sudo update-grub
+
+    - name: Get the NVIDIA driver installer
+      copy:
+        src: /media/penelopeprime/.Admin/Nvidia/NVIDIA-GRID-vSphere-6.7-450.55-450.51.05-451.48/NVIDIA-Linux-x86_64-450.51.05-grid.run
+        dest: /usr/local/NVIDIA-Linux-x86_64-450.51.05-grid.run
+        owner: setup
+        mode: 0777
+        remote_src: True
+
+    - name: Set lightdm as default display manager
+      script: /Users/alibi/ansible_playbooks/dpkgreconfig
+
+    - name: Stop X server to install nvidia driver
+      shell: |
+        systemctl stop lightdm
+        systemctl stop gdm3
+
+    - name: Configure Apport to stop messing around
+      lineinfile:
+        dest: /etc/default/apport
+        regexp: '^enabled=1'
+        line: enabled=0
+
+    - name: Install NVIDIA GRID driver
+      shell: /usr/local/NVIDIA-Linux-x86_64-450.51.05-grid.run -q -a -n -X -s -Z
+      # -Z
+      ignore_errors: yes
+
+    - name: Enable Nvidia Grid template file to be used for licence server config
+      copy:
+        src: /etc/nvidia/gridd.conf.template
+        dest: /etc/nvidia/gridd.conf
+        owner: root
+        mode: 0611
+        remote_src: True
+
+    - name: Add NVIDIA GRID License server IP
+      lineinfile: dest=/etc/nvidia/gridd.conf regexp='^ServerAddress=' line='ServerAddress=10.33.32.19'
+
+    - name: Add NVIDIA GRID License server port
+      lineinfile: dest=/etc/nvidia/gridd.conf regexp='^ServerPort=' line='ServerPort=7070'
+
+    - name: Add NVIDIA GRID License feature
+      lineinfile: dest=/etc/nvidia/gridd.conf regexp='^FeatureType=0' line='FeatureType=2'
+
+    - name: Add NVIDIA GRID License GUI
+      lineinfile: dest=/etc/nvidia/gridd.conf regexp='^#EnableUI=TRUE' line='EnableUI=TRUE'
+
+    - name: Stop nvidia-gridd service
+      service:
+        name: nvidia-gridd
+        state: stopped
+
+    - name: Remove NVIDIA driver installer file
+      file:
+        path: /usr/local/NVIDIA-Linux-x86_64-450.51.05-grid.run
+        state: absent
+      ignore_errors: yes
+
+    - name: Reboot the VMs to enable the NVIDIA GRID driver
+      reboot:
+        msg: System reboot inititated by Ansible
+        reboot_timeout: 120
+
+    - name: Make sure the is no older version of Horizon on the VMs
+      shell: rm -r /home/setup/VMware-*-linux*
+      ignore_errors: yes
+
+    - name: Unarchive the Horizon ViewAgent Tarball
+      unarchive:
+        src: /media/penelopeprime/.Admin/Horizon-7.12/VMware-horizonagent-linux-x86_64-7.12.0-15765535.tar.gz
+        dest: /home/setup/
+        remote_src: True
+        owner: setup
+        mode: 0777
+
+    - name: Install and register the Horizon ViewAgent with the Connection server
+      shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n "{{inventory_hostname}}" -b "{{ brokerip }}" -d "{{ vmdomain }}" -u "{{ brokeruser }}" -p "{{ brokerpass }}"
+      register: HorizonInstallLog
+
+    - name: Collecting installation logs
+      debug: var=HorizonInstallLog.stdout_lines
+
+    - name: Changing the default network in the Viewagenet configuration file
+      lineinfile: dest=/etc/vmware/viewagent-custom.conf regexp='^#Subnet=192.168.1.0/24' line='Subnet=10.33.32.0/24'
+
+    - name: Disabling Keyboard Layout Syncronisation
+      lineinfile: dest=/etc/vmware/viewagent-custom.conf regexp='^#KeyboardLayoutSync=FALSE' line='KeyboardLayoutSync=FALSE'
+
+    - name: Enable bi-directional Clipboard option between client and agent
+      lineinfile: dest=/etc/vmware/config regexp='^#Clipboard.Direction=1' line='Clipboard.Direction=1'
+
+    - name: Reboot the VMs to apply the Horizon Agent settings
+      reboot:
+        msg: System reboot inititated by Ansible
+        reboot_timeout: 120
+
+    - name: Install Ubuntu Repo based tools
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+        - autoconf
+        - libtool
+        - aptitude
+        - openjdk-8-jre
+        - openjdk-8-jre-headless

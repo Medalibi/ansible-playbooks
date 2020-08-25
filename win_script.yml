@@ -1,0 +1,14 @@
+---
+- name: Run a script on Windows hosts
+  hosts: ThinClientTR2 ThinClientTR1
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Run Temp folder cleaning script
+      win_shell: C:\Windows\System32\GroupPolicy\Machine\Scripts\Shutdown\TempClean.bat
+      args:
+        executable: cmd
+      register: output
+
+    - debug: var=output.stdout_lines
+

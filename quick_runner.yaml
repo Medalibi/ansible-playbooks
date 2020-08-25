@@ -1,0 +1,146 @@
+---
+- name: Run quick taska
+  hosts: mastervm
+  # mastervm localvm ubuntuvm
+  name: Configure VMs instances
+  remote_user: setup
+  become: True
+  gather_facts: True
+  tasks:
+    - name: Install Ubuntu Repo based tools
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+        - autoconf
+        - libtool
+        - aptitude
+        - openjdk-8-jre
+        - default-jre
+        - openjdk-8-jre-headless
+        - libcanberra-gtk3-module
+        - libcanberra-gtk-module
+        - libxml2-dev
+        - libxml2
+        - liblzma-dev
+        - curl
+        - libcurl4-openssl-dev
+        - build-essential
+        - make
+        - gcc
+        - automake
+        - libssl-dev
+        - zlib1g-dev
+        - libbz2-dev
+        - python3
+        - python
+        - python3-pip
+        - gnome-session
+        - ubuntu-desktop
+        - mesa-utils
+        - chromium-browser
+        - ubuntu-restricted-extras
+        - unrar
+        - rar
+        - icedax
+        - lame
+        - sharutils
+        - unace
+        - zip
+        - unzip
+        - p7zip-full
+        - p7zip-rar
+        - flashplugin-installer
+        - bleachbit
+        - openssh-server
+        - htop
+        - nload
+        - git
+        - python-dbus
+        - python-gobject
+        - libmpeg3-dev
+        - cmake
+        - libjpeg8
+        - libglib2.0-dev
+        - libglib2.0-0
+        - libexpat1
+        - libxss1
+        - libudev1
+        - libudev-dev
+        - libflac++-dev
+        - libflac-dev
+        - libswscale-dev
+        - expect
+        - nfs-common
+        - libglvnd-dev
+        - libglvnd-core-dev
+        - libglvnd0
+        - pkg-config
+        - x11-xserver-utils
+        - gcc
+        - make
+        - ubuntu-desktop
+        - open-vm-tools
+        - open-vm-tools-desktop
+        - xorg
+        - expect
+        - xterm
+        - mesa-utils
+        - default-jre
+        - i3
+        - libgl1-mesa-dri:i386
+        - libgl1-mesa-glx:i386
+        - pulseaudio
+        - libglvnd-dev
+        - libglvnd-core-dev
+        - libglvnd0
+        - pkg-config
+        - build-essential
+        - x11-xserver-utils
+        - nfs-common
+        - zlib1g-dev
+        - libbz2-dev
+        - libncurses5-dev
+        - libncursesw5-dev
+        - liblzma-dev
+        - gcc
+        - make
+        - libcurl4-openssl-dev
+        - libssl-dev
+
+    - name: Install languepacks
+      shell: |
+        apt -y install `check-language-support -l fr`
+        apt -y install `check-language-support -l en`
+        apt -y install `check-language-support -l es`
+        apt -y install `check-language-support -l de`
+        apt -y install `check-language-support -l it`
+
+    - name: Upgrade all software
+      apt: upgrade=yes
+
+    - name: Remove useless packages from the cache
+      apt:
+        autoclean: yes
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
+
+    - name: Stop gdm initial setup
+      lineinfile:
+        dest: /etc/gdm3/custom.conf
+        regexp: '^# Enabling timed login'
+        line: 'InitialSetupEnable=false'
+
+    - name: Stop gdm initial setup 2.0
+      lineinfile:
+        dest: /etc/xdg/autostart/gnome-initial-setup-first-login.desktop
+        regexp: '^Exec=/usr/lib/gnome-initial-setup/gnome-initial-setup --existing-user'
+        line: '##Exec=/usr/lib/gnome-initial-setup/gnome-initial-setup --existing-user'
+
+    - name: Install required packages for the NVIDIA driver installer
+      apt: name={{ item }} state=latest update_cache=yes
+      loop: [ 'libglvnd-dev', 'libglvnd-core-dev', 'libglvnd0', 'pkg-config', 'build-essential', 'nfs-common', 'x11-xserver-utils']
+

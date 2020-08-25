@@ -1,0 +1,31 @@
+---
+- name: Configrue Windows hosts to be managed by Ansible
+  hosts: ThinClientTR1 ThinClientTR2
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Copy Config file to hosts
+      win_copy:
+        src: /home/alibi/ConfigureRemotingForAnsible2018.ps1
+        dest: C:\ConfigureRemotingForAnsible2018.ps1
+
+    - name: Enable execution policy for the PSWindowsUpdate Module
+      raw: Start-Process powershell -verb RunAs -ArgumentList 'Set-ExecutionPolicy Unrestricted -Force'
+
+#    - win_shell: Set-ExecutionPolicy Unrestricted -Force; C:\ConfigureRemotingForAnsible2018.ps1
+#    - raw: Get-ExecutionPolicy
+
+    - name: Execute the Ansible Confiruation file
+#      raw: powershell.exe -executionpolicy bypass -windowstyle hidden -noninteractive -nologo -file "C:\ConfigureRemotingForAnsible2018.ps1"
+      win_shell: C:\ConfigureRemotingForAnsible2018.ps1 >> ConfigureRemotingForAnsible2018.log
+#      raw: Powershell -Version 5.0 -executionpolicy bypass -file "C:\ConfigureRemotingForAnsible2018.ps1"
+      ignore_errors: yes
+
+    - name: Remove the Config file from host
+      raw: Remove-Item C:\ConfigureRemotingForAnsible2018.*
+      ignore_errors: yes
+
+#    - name: Restart all Machines
+#      win_reboot:
+#        msg: Reboot initiated by Ansible after driver installation
+#        pre_reboot_delay_sec: 10

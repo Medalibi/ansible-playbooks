@@ -1,0 +1,28 @@
+---
+- name: Enable HP Enhanced Write Manager 
+  hosts: ThinClientTR1 ThinClientTR2
+# ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Enabeling Write Filter
+#      win_shell: HpWriteFCtrl.exe -getusage
+      win_shell: HpWriteFCtrl.exe -enable
+      args:
+        executable: cmd
+      register: output
+
+    - debug: var=output.stdout_lines
+
+    - name: Restart hosts
+      win_command: shutdown /r /t 5 /d p:2:4 /c "Ansible reboot triggred to enable HP Write Filter."
+      async: 0
+      poll: 0
+      ignore_errors: true
+      when: output.changed
+
+
+#    - name: Restart hosts
+#      win_reboot:
+#        msg: Reboot initiated by Ansible to apply HP Write Filter change.
+#        pre_reboot_delay_sec: 5
+#      when: output.changed

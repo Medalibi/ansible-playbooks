@@ -1,7 +1,9 @@
 ---
 - name: Running R Command inside R
   gather_facts: no
-  hosts: TR1
+  become: yes
+  become_method: sudo
+  hosts: TR2
 #  roles:
 #    - r
 #  vars:
@@ -21,26 +23,31 @@
 #      - name: mzR
 #        type: bioconductor
   tasks:
+#   - name: Remove packages installed using APT 
+#     apt: pkg=r-cran-igraph state=absent
 
-   - name: Install mzR and xcms
-     shell: Rscript --vanilla -e "source('http://bioconductor.org/biocLite.R'); biocLite(c('mzR','xcms'), suppressAutoUpdate=TRUE)"
+#
+   - name: Install R packages using bioconductor
+     shell: Rscript --vanilla -e "devtools::install_github('bioFAM/MOFAdata')"
+     become_user: training
 
-   - shell: chmod 777 -R /usr/lib/R/site-library
-   - shell: chmod 777 -R /usr/lib/R/library
-   - shell: chmod 777 -R /usr/local/lib/R/site-library
+
+#   - shell: chmod 777 -R /usr/lib/R/site-library
+#   - shell: chmod 777 -R /usr/lib/R/library
+#   - shell: chmod 777 -R /usr/local/lib/R/site-library
 
 #   - name: Install R CRAN Dev r-base-dev using apt-get
 #     apt: pkg=r-base-dev state=installed  update_cache=true
 
-   - name: Install standard Devtools
-     shell: Rscript --vanilla -e "install.packages('devtools', repos='http://cran.ma.imperial.ac.uk')"
+#   - name: Install standard Devtools
+#     shell: Rscript --vanilla -e "install.packages('devtools', repos='http://cran.ma.imperial.ac.uk')"
 #     become_user: training
 
 #   - name: Install Hadley Devtools
 #     shell: Rscript --vanilla -e "devtools::install_github('hadley/devtools')"
 #     become_user: training
 
-   - name: Install LCMS
-     shell: Rscript --vanilla -e "devtools::install_git('https://gitlab.cs.man.ac.uk/mibssmv3/LCMSTeachingDemo.git')" 
-     become_user: training
+#   - name: Install LCMS
+#     shell: Rscript --vanilla -e "devtools::install_git('https://gitlab.cs.man.ac.uk/mibssmv3/LCMSTeachingDemo.git')" 
+#     become_user: training
 

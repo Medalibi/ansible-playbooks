@@ -1,0 +1,11 @@
+---
+- name: Windows Power control
+  hosts: r2u30
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Wake on Lan Windows remote hosts 
+      win_wakeonlan:
+        mac: '{{ ansible_host_mac }}'
+        port: 9
+#      delegate_to: remote_system

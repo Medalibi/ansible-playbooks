@@ -1,0 +1,28 @@
+---
+- name : Install Nvidia Driver on Windows hosts
+  hosts: windowsTR1
+#windowsTR2 windowsTR1
+  gather_facts: no
+  tasks:
+#    - name: Restart all Machines
+#      win_reboot:
+#        msg: Reboot initiated by Ansible
+#        pre_reboot_delay_sec: 2
+
+    - name: Copy the exe folder to the host
+      win_copy:
+        src=/media/penelopeprime/370.21-quadro-grid-desktop-notebook-win8-win7-64bit-international-whql.exe
+        dest=C:\nvidia_setup.exe
+
+    - name: Install an exe file with arguments
+      raw: Start-Process -Wait -FilePath "C:\nvidia_setup.exe" -ArgumentList "/s"
+
+    - name: Delete the exe file
+      win_file: path=C:\nvidia_setup.exe state=absent
+      register: result
+
+    - name: Restart all Machines
+      win_reboot:
+        msg: Reboot initiated by Ansible
+        pre_reboot_delay_sec: 10
+      when: update_result.changed

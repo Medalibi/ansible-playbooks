@@ -1,0 +1,39 @@
+---
+- name : Install Prism MSI packages 
+  hosts: ThinClientTR1
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+
+    - name: Uninstall HP Write Manager
+      win_package:
+        product_id: '{041EE945-15FD-4DDA-8DD3-C2DB0A14B359}'
+        state: absent
+      ignore_errors: yes
+      register: uninstall_result
+
+    - debug: var=uninstall_result
+
+    - win_reboot:
+      when: uninstall_result.changed
+
+
+#    - name: Install an MSI file with arguments
+#      win_msi: 
+#        path: C:
+#        state: absent
+#        extra_args: /QUIET 
+#        wait: true
+#      register: output
+
+#    - debug: var=output
+
+#    - name: uninstall R CRAN 
+#      win_chocolatey:
+#        name: r.project
+#        state: absent 
+
+#    - name: Uninstall Rstudio
+#      win_chocolatey:
+#        name: r.studio
+#        state: absent

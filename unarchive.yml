@@ -1,0 +1,42 @@
+---
+- name: unarchive files into remote machines
+  hosts: ExternalTR
+  # TR1 TR2 ExternalTR
+  become: yes
+  gather_facts: no
+  tasks:
+   - name: remove old file 1
+     file:
+       path: /home/training/Desktop/ChIP-seq_vs
+       state: absent
+     register: output
+     ignore_errors: true
+
+   - name: remove old file 2
+     file:
+       path: /home/training/Desktop/ChIP-seq
+       state: absent
+     when: output.changed
+     ignore_errors: true
+
+   - name: unarchive file 1
+     unarchive: 
+       src: "/media/penelopeprime/.Admin/ChIP-seq.zip"
+       dest: /home/training/Desktop/
+       remote_src: True 
+       owner: training 
+       mode: 0777
+     when: output.changed
+ 
+   - name: unarchive file 2
+     unarchive:
+       src: "/media/penelopeprime/.Admin/answers.zip"
+       dest: /home/training/Desktop/
+       remote_src: True
+       owner: training
+       mode: 0777
+     when: output.changed
+
+#   - shell: chmod 777 -R /home/training/Gene_fusion
+#   - shell: chmod 777 -R /home/training/Desktop/Module_*
+#   - shell: chown training -R /home/training/Desktop/Module_*

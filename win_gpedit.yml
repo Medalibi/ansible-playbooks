@@ -1,0 +1,53 @@
+---
+- name: Windows Group Policies editing
+  hosts: masterTC
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+   - name: Create the needed folders
+     win_file:
+       path: '{{ item }}'
+       state: directory
+     with_items:
+      - 'C:\Windows\system32\GroupPolicy\Machine\Scripts\Startup'
+      - 'C:\Windows\system32\GroupPolicy\Machine\Scripts\Shutdown'
+
+   - name: Copy Temp folders clearing script
+     win_copy:
+       src: "/media/penelopeprime/Course_Materials/.Admin/TempClean.bat"
+       dest: 'C:\Windows\system32\GroupPolicy\Machine\Scripts\Shutdown\TempClean.bat'
+
+   - name: Create registry path for Scripts folder
+     win_regedit:
+       path: '{{ item }}'
+       state: present
+     with_items:
+       - 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Shutdown\0\0'
+       - 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Scripts\Shutdown\0\0'
+       - 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Machine\Scripts\Startup\0\0'
+       - 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Group Policy\State\Scripts\Startup\0\0'
+     ignore_errors: yes
+
+   - name: Copy register files locally
+     win_copy:
+       src: '{{ item.src }}'
+       dest: '{{ item.dest }}'
+     with_items:
+       - { src: "/media/penelopeprime/Course_Materials/.Admin/StateShut.reg", dest: 'C:\StateShut.reg' }
+       - { src: "/media/penelopeprime/Course_Materials/.Admin/ScriptShut.reg", dest: 'C:\ScriptShut.reg' }
+
+   - name: Merge registry file to 
+     win_regmerge:
+      path: '{{ item }}'
+     with_items:
+       - 'C:\StateShut.reg'
+       - 'C:\ScriptShut.reg'
+     ignore_errors: yes
+
+   - name: Delete the reg files when done
+     win_file:
+       path: '{{ item }}'
+       state: absent
+     with_items:
+       - 'C:\StateShut.reg'
+       - 'C:\ScriptShut.reg'

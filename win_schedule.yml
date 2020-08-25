@@ -1,0 +1,28 @@
+---
+- name : Add a scheduled task to Windows hosts
+  hosts: ThinClientTR1 ThinClientTR2
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Add task to start Horizon Client at user login
+      win_scheduled_task:
+        name: HorizonClient
+        description: Start VMware horizon Client
+        actions:
+        - path: C:\Program Files (x86)\VMware\VMware Horizon View Client\vmware-view.exe
+        triggers:
+        - type: logon
+          enabled: yes
+        allow_demand_start: yes
+        disallow_start_if_on_batteries: no
+        hidden: no 
+        multiple_instances: 0
+        stop_if_going_on_batteries: no
+        run_only_if_network_available: yes
+        username: 'courses\{{inventory_hostname}}'
+#        username: 'courses\training'
+        state: present
+        enabled: yes    
+      register: out
+
+    - debug: var=out

@@ -1,0 +1,231 @@
+---
+- name: Install packages using apt-get
+  gather_facts: no
+  hosts: TR2 ExternalTR
+  tasks:
+
+#   - name: Update the software cache
+#     apt: update_cache=yes
+
+#   - name: Upgrade all software
+#     apt: upgrade=yes
+
+#   - name: Remove useless packages from the cache
+#     apt:
+#       autoclean: yes
+
+#   - name: Remove dependencies that are no longer required
+#     apt:
+#       autoremove: yes
+
+#   - name: Download SeaView Archive
+#     get_url:
+#       url: http://doua.prabi.fr/software/seaview_data/seaview4-64.tgz
+#       dest: /usr/local/
+#       mode: 0777 
+
+#   - name: Unpacks SeaView Archive
+#     unarchive:
+#       src: /usr/local/seaview4-64.tgz
+#       dest: /usr/local/
+#       remote_src: yes
+   
+#   - name: Create symlink for SeaView bins 
+#     file:
+#        src: /usr/local/seaview/{{ item }}
+#        dest: /usr/local/bin/{{ item }}
+#        state: link
+#     with_items:
+#       - seaview
+#       - muscle
+#       - Gblocks
+#       - clustalo
+
+#   - name : Set Desktop icon for SeaView
+#     copy : src=/media/penelopeprime/Archive/name.desktop dest=/home/training/Desktop/SeaView.desktop owner=training mode=0777
+#   - lineinfile : dest=/home/training/Desktop/SeaView.desktop regexp='^Name=' line='Name=SeaView4'
+#   - lineinfile : dest=/home/training/Desktop/SeaView.desktop regexp='^Exec=' line='Exec=/usr/local/seaview/seaview'
+#   - lineinfile : dest=/home/training/Desktop/SeaView.desktop regexp='^Terminal=' line='Terminal=false'
+     
+#   - name : Install pre-requirement for htslib and samtools
+#     apt : name={{item}} state=installed 
+#     with_items:
+#       - libbz2-dev
+#       - liblzma-dev
+#       - libncurses5-dev
+
+#   - name: Download htslib Archive
+#     get_url:
+#       url: https://github.com/samtools/htslib/releases/download/1.6/htslib-1.6.tar.bz2
+#       dest: /usr/local/
+#       mode: 0777
+
+#   - name: Unpacks htslib Archive
+#     unarchive:
+#       src: /usr/local/htslib-1.6.tar.bz2
+#       dest: /usr/local/
+#       remote_src: yes
+
+#   - name: Configure and compile htslib 
+#     command: '"{{ item }}" chdir=/usr/local/htslib-1.6/'
+#     with_items:
+#       - ./configure
+#       - make
+
+#   - name: Install htslib
+#     command: 'make install chdir=/usr/local/htslib-1.6/'
+
+#   - name: Make install htslib 
+#     make:
+#       chdir: /usr/local/htslib-1.6/
+#       target: install
+
+#   - name: Download bcftools Archive
+#     get_url: 
+#      url: https://github.com/samtools/bcftools/releases/download/1.6/bcftools-1.6.tar.bz2
+#       url: https://github.com/samtools/bcftools/releases/download/1.2/bcftools-1.2.tar.bz2
+#       dest: /usr/local/
+#       mode: 0777
+
+#   - name: Unpacks bcftools Archive
+#     unarchive:
+#       src: /usr/local/bcftools-1.2.tar.bz2
+#       dest: /usr/local/
+#       remote_src: yes
+
+#   - name: Configure and compile bcftools
+#     command: '"{{ item }}" chdir=/usr/local/bcftools-1.2/'
+#     with_items:
+#       - ./configure
+#       - make
+
+#   - name: Install bcftools
+#     command: 'make install chdir=/usr/local/bcftools-1.2/'
+
+#   - name: Download samtools Archive
+#     get_url:
+#       url: https://github.com/samtools/samtools/releases/download/1.6/samtools-1.6.tar.bz2
+#       url: https://github.com/samtools/samtools/archive/0.1.18.tar.gz
+#       dest: /usr/local/
+#       mode: 0777
+
+#   - name: Unpacks samtools Archive
+#     unarchive:
+#       src: /usr/local/samtools-0.1.18.tar.gz
+#       dest: /usr/local/
+#       remote_src: yes
+
+#   - name: Configure and compile samtools
+#     command: '"make" chdir=/usr/local/samtools-0.1.18/'
+#     with_items:
+#       - ./configure
+#       - make
+
+
+   - name: remove old bcftools bin
+     file:
+       path: /usr/local/bin/bcftools
+       state: absent
+
+   - name: Create symlink for bcftools
+     file:
+        src: /usr/local/samtools-0.1.18/bcftools/bcftools
+        dest: /usr/local/bin/bcftools
+        state: link
+
+#   - name: remove old samtools bin
+#     file:
+#       path: /usr/local/bin/samtools
+#       state: absent
+
+#   - name: Create symlink for samtools
+#     file:
+#        src: /usr/local/samtools-0.1.18/samtools
+#        dest: /usr/local/bin/samtools
+#        state: link
+
+#   - name: Install samtools
+#     command: 'make install chdir=/usr/local/samtools-1.6/'
+
+   - name: Download vcfutils.pl
+     get_url:
+       url: ftp://ftp.sanger.ac.uk/pub/resources/coursesandconferences/Mst5_2017/vcfutils.pl
+       dest: /usr/local/samtools-0.1.18/
+       mode: 0777
+
+   - name: remove old vcfutils bin
+     file:
+       path: /usr/local/bin/vcfutils.pl
+       state: absent
+
+   - name: remove old vcfutils bin simplified
+     file:
+       path: /usr/local/bin/vcfutils
+       state: absent
+
+   - name: Create symlink for vcfutils
+     file:
+        src: /usr/local/samtools-0.1.18/vcfutils.pl
+        dest: /usr/local/bin/vcfutils.pl
+        state: link
+
+   - name: Create symlink for vcfutils simplified
+     file:
+        src: /usr/local/samtools-0.1.18/vcfutils.pl
+        dest: /usr/local/bin/vcfutils
+        state: link
+
+
+
+
+
+
+
+
+
+
+
+#   - name: fix flash plugins error
+#     shell: pkexec /usr/lib/update-notifier/package-data-downloader
+#   - shell: pkill update-notifier
+
+#   - name: Install pymol
+#     apt: pkg=pymol state=installed update_cache=true
+
+#   - name: fix flash plugins error
+#     shell: pkexec /usr/lib/update-notifier/package-data-downloader
+
+#   - name: Update the software cache
+#     apt: update_cache=yes
+
+#   - name: Upgrade all software
+#     apt: upgrade=dist
+
+#   - name: Install rstudio latex lib
+#     apt: pkg={{item}} state=absent
+#     with_items:
+#       - ganglia-monitor
+#       - r-cran-rmysql
+#       - r-cran-tkrplot
+#       - libpq-dev
+
+#   - name: restart machine
+#     command: shutdown -r now "Ansible reboot triggred"
+#     async: 0
+#     poll: 0
+#     ignore_errors: true
+
+
+#   - name: Install pymol
+#     apt: pkg=pymol state=installed update_cache=true
+
+#   - name: Install Gdebi
+#     apt: pkg=gdebi state=installed update_cache=true
+
+#   - name : Install 1st batch of packages for STAMP
+#     apt : name={{item}} state=installed update_cache=true
+#     with_items:
+#       - bwa
+#       - samtools
+#       - igv
+

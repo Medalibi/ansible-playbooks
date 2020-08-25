@@ -1,6 +1,6 @@
 ---
 - name: Windows Register editing
-  hosts: r1u29
+  hosts: masterTC
 #ThinClientTR1 ThinClientTR2
   gather_facts: no
   tasks:

@@ -1,0 +1,61 @@
+---
+- name: Run a script on Windows hosts
+  hosts: ThinClientTR1
+#ThinClientTR2 ThinClientTR1
+#  serial: 4
+  gather_facts: no
+  tasks:
+    - name: Get machines  Hostname
+      win_shell: hostname
+      register: output
+
+    - debug: var=output
+
+#    - name: Copy config file
+#      win_copy:
+#        src: /media/penelopeprime/Course_Materials/.Admin/uninstall_config.xml
+#        dest: 'C:\uninstall_config.xml'
+
+#    - name: Uninstall office 2016 ProPlus
+#      win_shell: '& "C:\Program Files (x86)\Common Files\Microsoft Shared\OFFICE16\Office Setup Controller\setup.exe" /uninstall PROPLUS /config C:\uninstall_config.xml'
+#      ignore_errors: yes
+#      register: output
+
+#    - debug: var=output
+
+#    - name: Delete the config file
+#      win_file:
+#        path: C:\uninstall_config.xml
+#        state: absent
+
+#    - name: Mount Penelopeprime
+#      win_shell: 'net use "O:" \\penelopeprime.courses.ebi.ac.uk\shared "training" /User:courses.ebi.ac.uk\training'
+
+#    - name: Copy script file
+#      win_copy:
+#        src: /media/penelopeprime/Course_Materials/.Admin/install_office2016.ps1
+#        dest: 'C:\install_office2016.ps1'
+
+#    - name: Install Office 2016 ProPlus
+#      win_shell: C:\install_office2016.ps1
+#                Net Use "O:" \\penelopeprime.courses.ebi.ac.uk\shared ; O:\Archive\Office16\setup.exe 
+#      ignore_errors: yes
+#      register: output
+
+#    - debug: var=output.stdout_lines
+
+#    - name: Delete the config file
+#      win_file:
+#        path: C:\install_office2016.ps1
+#        state: absent
+
+
+#    - name: Activate Office 2016 against local KMS server
+#      win_shell: "cscript OSPP.VBS /act"
+#      args:
+#        chdir: 'C:\Program Files (x86)\Microsoft Office\Office16\'
+#        executable: cmd
+#      register: output
+
+#    - debug: var=output.stdout_lines
+

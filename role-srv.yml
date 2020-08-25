@@ -1,0 +1,8 @@
+---
+- name: install services on local servers
+  hosts: penelopeprime
+  become: yes
+  become_method: sudo
+  roles:
+    - { role: geerlingguy.nfs }
+    - { role: geerlingguy.samba }

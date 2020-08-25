@@ -1,0 +1,24 @@
+---
+- name : Stop ElacticSearch beats
+  hosts: r1u30
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+
+    - name: Stopping Metricbeat service
+      raw: Stop-Service metricbeat
+
+    - name: Starting winlogbeat service
+      raw: Stop-Service winlogbeat
+
+    - name: uninstall metricbeat
+      win_shell: c:\metricbeat\uninstall-service-metricbeat.ps1
+
+    - name: uninstall winlogbeat
+      win_shell: c:\winlogbeat\uninstall-service-winlogbeat.ps1
+
+    - name: Delete the metricbeat folder
+      win_file: path=C:\metricbeat state=absent
+
+    - name: Delete the winlogbeat folder
+      win_file: path=C:\winlogbeat state=absent

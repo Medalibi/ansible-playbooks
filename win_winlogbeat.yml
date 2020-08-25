@@ -1,0 +1,38 @@
+---
+- name : Install ElacticSearch Winlogbeat 
+  hosts: r1u31 r2u31
+#ThinClientTR2 ThinClientTR1 WinManagement
+  gather_facts: no
+  tasks:
+    - name: Copy the winlogbeat archive to the host
+      win_copy:
+        src: /media/penelopeprime/Archive/winlogbeat.zip
+        dest: C:\winlogbeat.zip
+
+    - name: Extract the winlogbeat archive
+      win_unzip:
+        src: C:\winlogbeat.zip
+        dest: C:\
+
+    - name: Delete the zip Archive
+      win_file: path=C:\winlogbeat.zip state=absent
+
+    - name: Install Winlogbeat
+      win_shell: c:\winlogbeat\install-service-winlogbeat.ps1
+
+    - name: Loading Winlogbeat Template
+      raw: c:\winlogbeat\winlogbeat.exe setup config -c c:\winlogbeat\winlogbeat.yml --template -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["10.7.243.25:9200"]'
+
+    - name: Creating Winlogbeat Template Manually
+      raw: c:\winlogbeat\winlogbeat.exe export template --es.version 6.2.1 config -c c:\winlogbeat\winlogbeat.yml | Out-File -Encoding UTF8 c:\winlogbeat\winlogbeat.template.json
+
+    - name: loading Winlogbeat Template Manually
+      raw: Invoke-RestMethod -Method Put -ContentType "application/json" -InFile c:\winlogbeat\winlogbeat.template.json -Uri http://10.7.243.25:9200/_template/winlogbeat-6.2.1
+
+    - name: Setup winlogbeat Kibana dashboards
+      raw: c:\winlogbeat\winlogbeat setup config -c c:\winlogbeat\winlogbeat.yml --dashboards
+
+    - name: Starting Winlogbeat service
+      raw: Start-Service winlogbeat
+
+

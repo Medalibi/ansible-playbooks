@@ -1,19 +1,24 @@
 ---
 - name : Install MSI packages 
-  hosts: r1u10            #ThinClientTR2 ThinClientTR1
+  hosts: r1u20
+#ThinClientTR2 ThinClientTR1
   gather_facts: no
   tasks:
-    - name: Copy the MSI file to the host
-      win_copy:
-        src=/media/penelopeprime/Archive/NSCP-0.5.0.62-x64.msi
-        dest=C:\NSCP-0.5.0.62-x64.msi
+   - win_copy:
+       src: /media/penelopeprime/Course_Materials/HPWriteManager-01.07.019-Win64.msi
+       dest: C:\SWSETUP\HPWriteManager-01.07.019-Win64.msi
 
-    - name: Install an MSI file with arguments
-      win_msi: 
-        path: C:\NSCP-0.5.0.62-x64.msi
+   - name: Install an MSI file with arguments
+#     win_msi: 
+#       path: C:\SWSETUP\HPWriteManager-01.07.019-Win64.msi
+     win_shell: msiexec /a /quit /forcerestart C:\SWSETUP\HPWriteManager-01.07.019-Win64.msi
+#     become: yes
+#     become_method: runas
+#        path: C:\flashplayer.exe
 #        state: absent
-        extra_args: ADDLOCAL=FirewallConfig,LuaScript,DotNetPluginSupport,Documentation,CheckPlugins,NRPEPlugins,NSCPlugins,NSCAPlugin,PythonScript,ExtraClientPlugin,SampleScripts ALLOWED_HOSTS=127.0.0.1,10.7.243.29 CONF_NSCLIENT=1 CONF_NRPE=1 CONF_NSCA=1 CONF_CHECKS=1 CONF_NSCLIENT=1 CONF_SCHEDULER=1 CONF_CAN_CHANGE=1 MONITORING_TOOL=none NSCLIENT_PWD=fridge
-        wait: true
+#        extra_args: ADDLOCAL=FirewallConfig,LuaScript,DotNetPluginSupport,Documentation,CheckPlugins,NRPEPlugins,NSCPlugins,NSCAPlugin,PythonScript,ExtraClientPlugin,SampleScripts ALLOWED_HOSTS=127.0.0.1,10.7.243.29 CONF_NSCLIENT=1 CONF_NRPE=1 CONF_NSCA=1 CONF_CHECKS=1 CONF_NSCLIENT=1 CONF_SCHEDULER=1 CONF_CAN_CHANGE=1 MONITORING_TOOL=none NSCLIENT_PWD=fridge
+#        extra_args: "//a //quiet //forcerestart"
+#       wait: true
 
-    - name: Delete the MSI file
-      win_file: path=C:\NSCP-0.5.0.62-x64.msi state=absent
+#   - name: Delete the MSI file
+#     win_file: path="C:\SWSETUP\*" state=absent

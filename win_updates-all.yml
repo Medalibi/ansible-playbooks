@@ -1,6 +1,6 @@
 ---
 - name : Ansible Playbook to patch and update Windows hosts
-  hosts: ThinClientTR1 ThinClientTR2 ThinClient
+  hosts: ThinClientTR1 ThinClientTR2
 #ThinClientTR1 ThinClientTR2
 #  serial: 1
   gather_facts: no 
@@ -8,9 +8,10 @@
     # Make sure the Windows Update service is started
     - name: Start Windows Update service
       win_service:
-       name: wuauserv
-       start_mode: delayed
-       state: started
+        name: wuauserv
+        start_mode: delayed
+        state: started
+      ignore_errors: yes
 
     # Check if there are missing updates
     - block:
@@ -19,23 +20,38 @@
             state: searched
           register: update_count
           ignore_errors: yes
+
+        - name: Add a powershell module
+          win_psmodule:
+            name: PSWindowsUpdate
+            state: present
+          ignore_errors: yes
+
+        - name: Hide unwanted update
+          raw: Hide-WUUpdate –KBArticleID 'KB4088786' –Confirm:$false
+          register: update_hiding
+          ignore_errors: yes
+
+    - debug: var=update_hiding.stdout_lines
  
       #Install missing updates only if at least one is missing
     - block:
         - name: Install missing updates
           win_updates:
             category_names:
-              - Application
+              - SecurityUpdates
               - Connectors
+              - SecurityUpdates
+              - CriticalUpdates
+              - UpdateRollups
               - DefinitionUpdates
-              - DeveloperKits
               - FeaturePacks
-              - Guidance
+              - Application
               - ServicePacks
               - Tools
-              - UpdateRollups
-              - CriticalUpdates
-              - SecurityUpdates
+              - Updates
+              - DeveloperKits
+              - Guidance
           ignore_errors: yes
           register: update_result
         - name: Reboot, if needed
@@ -43,6 +59,15 @@
             msg: Reboot initiated by Ansible
           when: update_result.reboot_required
           ignore_errors: yes
+        - name: Reboot, if Failed 
+          win_reboot:
+            msg: Reboot initiated by Ansible
+          when: update_result.failed
+          ignore_errors: yes
       when: update_count.found_update_count|int >= 1
 
  
+    - name: Restart all Machines
+      win_reboot:
+        msg: Reboot initiated by Ansible after Windows update
+        pre_reboot_delay_sec: 10

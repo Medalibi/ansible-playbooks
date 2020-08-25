@@ -1,9 +1,20 @@
 ---
 - name: Windows Power Control
-  hosts: ThinClientTR2 ThinClient ThinClientTR1
+  hosts: ThinClientTR1 ThinClientTR2
 #ThinClientTR1 ThinClientTR2
   gather_facts: no
   tasks:
+#    - name: Clear all Temp folders
+#      win_shell: C:\Windows\System32\GroupPolicy\Machine\Scripts\Shutdown\TempClean.bat
+#      args:
+#        executable: cmd
+
     - name: Restart all Machines  
-      win_reboot:
-        msg: Reboot initiated by Ansible
+      win_command: shutdown /r /t 5 /d p:2:4 /c "Reboot triggred by Ansible."
+      async: 0
+      poll: 0
+      ignore_errors: true
+
+#      win_reboot:
+#        msg: Reboot initiated by Ansible
+#        pre_reboot_delay_sec: 10

@@ -1,10 +1,114 @@
 ---
 - name: Run shell commands as they are
+  become: yes
+  become_method: sudo
   gather_facts: no
-  hosts: TR2
+  hosts: TR1
+#TR1 TR2
   tasks:
-   - name: Disable the firewall UFW
-     shell: ufw disable
+
+  - name: Compile Plumed with MPI
+    shell: |
+      ./configure --prefix=/usr/local/ CXX=mpic++ --enable-mpi
+      make -j 8
+      make check -j 8
+      make install
+    args:
+      chdir: /usr/local/plumed-2.5.4/
+
+  - name: Patch Gromac 2019 with Plumed
+    shell: plumed patch -p -e gromacs-2019.4
+    args:
+      chdir: /home/training/gromacs-2019.5/
+
+
+#   - name: Fix DNS resolve
+#     shell: cd /usr/local && wget -c http://ab.inf.uni-tuebingen.de/data/software/megan6/download/MEGAN_Community_unix_6_15_2.sh && mv MEGAN_Community_unix_6_15_2.sh MEGAN.sh && chmod 777 /usr/local/MEGAN.sh && /usr/local/MEGAN.sh -q -dir /usr/local/MEGAN && ln -s /usr/local/MEGAN/MEGAN /usr/local/bin/megan && chmod 777 -R /usr/local/MEGAN/
+#     shell: echo "194.94.45.211   itol.embl.de" >> /etc/hosts
+#     shell: echo "nameserver 8.8.8.8" > /etc/resolv.conf && echo "nameserver 8.8.4.4" >> /etc/resolv.conf && echo "nameserver 10.7.243.10" >> /etc/resolv.conf  && echo "search courses.ebi.ac.uk" >> /etc/resolv.conf
+
+#sed -i 's/10.7.243.10/8.8.8.8/'  /etc/resolv.conf
+
+#   - name: Fix the other Dns resolve server
+#     shell: 
+#sed -i 's/10.7.243.11/8.8.4.4/'  /etc/resolv.conf
+
+#   - name: Fix the other
+#     shell: echo "nameserver 10.7.243.10" >> /etc/resolv.conf
+
+
+#   - name: Install a list of packages
+#     apt: pkg=['libgconf2-dev', 'libgconf2-4'] state=present
+
+#   - shell: echo "RAPIDMINER_HOME=/usr/local/rapidminer-studio" >> /etc/bash.bashrc
+#   - shell: export "RAPIDMINER_HOME=/usr/local/rapidminer-studio"
+
+#   - shell: echo "RAPIDMINER_HOME=/usr/local/rapidminer-studio" >> /home/training/.profile
+#     become: true
+#     become_user: training
+#   - shell: export "RAPIDMINER_HOME=/usr/local/rapidminer-studio"
+#     become: true
+#     become_user: training
+
+#   - shell: sed -i -e '/^assistive_technologies=/s/^/#/' /etc/java-*-openjdk/accessibility.properties
+
+#   - copy: src=/media/penelopeprime/Course_Materials/.Admin/rapidminer.desktop dest=/home/training/Desktop/ 
+
+#    - shell: chmod 777 /home/training/Desktop/rapidminer.desktop && chown training /home/training/Desktop/rapidminer.desktop
+
+
+#    - shell: git clone https://github.com/bioFAM/MOFAdata.git /home/training/MOFAdata
+#      become: true
+#      become_user: training
+
+#    - shell: apt purge -y teamviewer --autoremove
+
+#    - shell: apt install -y virtualenv
+
+#    - shell: virtualenv -p python3 egaclient 
+
+#    - shell: source egaclient /bin/activate && pip3 install -U requests && pip3 install pyega3 && pyega3 -h
+#      become: true
+#      become_user: training
+
+
+#    - shell: chmod 777 -R /usr/local/zeppelin-0.8.0-bin-all/
+
+#    - copy: src=/media/penelopeprime/Course_Materials/EIPP\ Bioinformatics\ Course/ml/ dest=/home/training/Desktop/
+#    - lineinfile : dest=/etc/hosts regexp='^10.7.243.41\tmanagementlinux\tmanagementlinux.courses.ebi.ac.uk' line='10.7.244.8 managementlinux managementlinux.courses.ebi.ac.uk'    
+
+#   - shell: apt instal -y python-pycurl python3-pycurl libcurl3 libcurl-ocaml-dev 
+#   - shell: python3.5 -m ipykernel install 
+
+#   - name: Run a Shell command
+#     shell: sed -i 's/io.getvalue().encode('utf-8')/io.getvalue().decode('utf-8')/' /usr/local/lib/python3.6/dist-packages/igraph/drawing/__init__.py
+#     shell: sudo pip3.5 install /media/penelopeprime/.Admin/pypath-0.7.73.tar.gz
+#     become: true
+#     become_user: training
+#     register: out
+
+#   - debug: var=out.stdout
+
+#   - name: Run a Shell command
+#     shell: pip3.6 install matplotlib
+
+#   - name: Run a Shel command
+#     shell: /usr/local/MATLAB/R2017b/bin/activate_matlab.sh
+#     become: true
+#     become_user: training
+
+#   - copy:
+#       src: "/media/penelopeprime/Course_Materials/EIPP\ Bioinformatics\ Course/ml"
+#       dest: /home/training/Desktop/
+#       remote_src: True
+#       owner: training
+#       mode: 0777
+
+#   - name: VM hostname configuration
+#     script: /home/alibi/hoster {{inventory_hostname}}
+#     ignore_errors: yes
+
+#     shell: ufw disable
 
 #   - name: Create the Ubuntu default Desktop icons 
 #     shell: gsettings set org.gnome.nautilus.desktop home-icon-visible  true; gsettings set org.gnome.nautilus.desktop volumes-visible true; gsettings set org.gnome.nautilus.desktop trash-icon-visible true

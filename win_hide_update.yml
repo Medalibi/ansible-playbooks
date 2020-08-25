@@ -1,0 +1,75 @@
+---
+- name: Uninstalls Windows hotfixes and updates
+  hosts: r1spare
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Copy PSWindowsUpdate script
+      win_copy:
+        src: /home/alibi/hide_update.ps1
+        dest: 'C:\'
+
+    - name: Copy PSWindowsUpdate module folder
+      win_copy:
+        src: /media/penelopeprime/Archive/PSWindowsUpdate
+        dest: 'C:\Windows\System32\WindowsPowerShell\v1.0\Modules\'
+#        dest: 'C:\Users\install\Documents\WindowsPowerShell\Modules\'
+        force: yes
+#    - raw: Remove-Item 'C:\Windows\System32\WindowsPowerShell\v1.0\Modules\PSWindowsUpdate\._*'
+
+    - name: Enable execution policy for the PSWindowsUpdate Module
+      raw: Start-Process powershell -verb RunAs -ArgumentList 'Set-ExecutionPolicy Unrestricted -Force'
+
+#    - win_shell: C:\hide_update.ps1
+
+    - name: Enable PSWindowsUpdate Module
+      raw: Import-Module PSWindowsUpdate 
+
+    - name: Add a powershell module
+      win_psmodule:
+        name: PSWindowsUpdate
+        state: present
+      ignore_errors: yes
+
+    - name: Start Windows Update service
+      win_service:
+        name: wuauserv
+        start_mode: delayed
+        state: started
+      ignore_errors: yes
+
+#    - name: Check for missing updates
+#      win_updates:
+#        state: searched
+#      ignore_errors: yes
+
+    - name: Hide unwanted update
+      win_shell: Hide-WindowsUpdate -KBArticleID 'KB4088786' -Confirm:$false
+      ignore_errors: yes
+
+#    - name: Add a powershell module
+#      win_psmodule:
+#        name: PSWindowsUpdate
+#        state: present
+#      ignore_errors: yes
+
+#    - name: Enable PSWindowsUpdate Module
+#      raw: Import-Module PSWindowsUpdate
+
+#    - name: Hide unwanted update
+#      raw: Start-Process powershell -verb RunAs -ArgumentList 'Hide-WUUpdate -KBArticleID KB4088786 -Confirm:$false'
+#      ignore_errors: yes
+
+#    - name: Hide unwanted update
+#      raw: Start-Process powershell -verb RunAs -ArgumentList 'Hide-WUUpdate -Title "2018-03 Cumulative Update for Windows 10 Version 1507*" -Confirm:$false'
+#      ignore_errors: yes
+  
+    - name: Hide unwanted update
+      raw: Start-Process powershell -verb RunAs -ArgumentList 'Hide-WUUpdate -Title "2018-03 Cumulative Update for Windows 10*" -HideStatus:$true  -Confirm:$false'
+      ignore_errors: yes
+
+    - name: Hide unwanted update
+      win_shell: Get-WUList
+      register: out
+
+    - debug: var=out.stdout_lines

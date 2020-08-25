@@ -1,0 +1,10 @@
+---
+- name: Copy files/folders on Windows
+  hosts: windowsTR1
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Copy font files
+      win_copy:
+        src: '/home/alibi/Desktop/MaxQuant.lnk'
+        dest: 'C:\Users\Public\Desktop\MaxQuant.lnk'

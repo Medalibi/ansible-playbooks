@@ -1,17 +1,121 @@
 ---
 - name: Copy files/folders on Windows
   hosts: windowsTR1
+#ThinClientTR1 ThinClientTR2
   gather_facts: no
   tasks:
-    - name: Copy Files
+    - name: Copy font files
+      win_copy:
+        src: '/home/alibi/font/{{ item }}'
+        dest: 'C:\Windows\fonts\{{ item }}'
+      with_items:
+        - HelveticaNeueLTPro-BdCnO.otf
+        - HelveticaNeueLTPro-BdCn.otf
+        - HelveticaNeueLTPro-BdExO.otf
+        - HelveticaNeueLTPro-BdEx.otf
+        - HelveticaNeueLTPro-BdIt.otf
+        - HelveticaNeueLTPro-Bd.otf
+        - HelveticaNeueLTPro-BdOu.otf
+        - HelveticaNeueLTPro-BlkCnO.otf
+        - HelveticaNeueLTPro-BlkCn.otf
+        - HelveticaNeueLTPro-BlkExO.otf
+        - HelveticaNeueLTPro-BlkEx.otf
+        - HelveticaNeueLTPro-BlkIt.otf
+        - HelveticaNeueLTPro-Blk.otf
+        - HelveticaNeueLTPro-CnO.otf
+        - HelveticaNeueLTPro-Cn.otf
+        - HelveticaNeueLTPro-ExO.otf
+        - HelveticaNeueLTPro-Ex.otf
+        - HelveticaNeueLTPro-HvCnO.otf
+        - HelveticaNeueLTPro-HvCn.otf
+        - HelveticaNeueLTPro-HvExO.otf
+        - HelveticaNeueLTPro-HvEx.otf
+        - HelveticaNeueLTPro-HvIt.otf
+        - HelveticaNeueLTPro-Hv.otf
+        - HelveticaNeueLTPro-It.otf
+        - HelveticaNeueLTPro-LtCnO.otf
+        - HelveticaNeueLTPro-LtCn.otf
+        - HelveticaNeueLTPro-LtExO.otf
+        - HelveticaNeueLTPro-LtEx.otf
+        - HelveticaNeueLTPro-LtIt.otf
+        - HelveticaNeueLTPro-Lt.otf
+        - HelveticaNeueLTPro-MdCnO.otf
+        - HelveticaNeueLTPro-MdCn.otf
+        - HelveticaNeueLTPro-MdExO.otf
+        - HelveticaNeueLTPro-MdEx.otf
+        - HelveticaNeueLTPro-MdIt.otf
+        - HelveticaNeueLTPro-Md.otf
+        - HelveticaNeueLTPro-Roman.otf
+        - HelveticaNeueLTPro-ThCnO.otf
+        - HelveticaNeueLTPro-ThCn.otf
+        - HelveticaNeueLTPro-ThExO.otf
+        - HelveticaNeueLTPro-ThEx.otf
+        - HelveticaNeueLTPro-ThIt.otf
+        - HelveticaNeueLTPro-Th.otf
+        - HelveticaNeueLTPro-UltLtCnO.otf
+        - HelveticaNeueLTPro-UltLtCn.otf
+        - HelveticaNeueLTPro-UltLtExO.otf
+        - HelveticaNeueLTPro-UltLtEx.otf
+        - HelveticaNeueLTPro-UltLtIt.otf
+        - HelveticaNeueLTPro-UltLt.otf
+        - HelveticaNeueLTPro-XBlkCnO.otf
+        - HelveticaNeueLTPro-XBlkCn.otf
+        - EBI-Conceptual.ttf
+        - EBI-Functional.ttf
+        - EBI-Generic.ttf
+        - EBI-Socialmedia.ttf
+        - EBI-Species.ttf
+        - MinionPro-BoldIt.otf
+        - MinionPro-Bold.otf
+        - MinionPro-It.otf
+        - MinionPro-MediumIt.otf
+        - MinionPro-Medium.otf
+        - MinionPro-Regular.otf
+        - MinionPro-SemiboldIt.otf
+        - MinionPro-Semibold.otf
+
+#      become: yes
+#      become_method: runas
+
+#     - win_file: 
+#         path: 'C:\Windows\System32\GroupPolicy\Machine\Scripts\Shutdown'
+#         state: directory
+
+#     - win_copy:
+#        src: /media/penelopeprime/Course_Materials/.Admin/TempClean.bat
+#        dest: 'C:\Windows\System32\GroupPolicy\Machine\Scripts\Shutdown\TempClean.bat'
+
+
+#    - name: Copy icon file
 #      win_copy: src=/media/penelopeprime/Scripts/AtomSetup.exe dest=C:\SWSETUP\
 
 #      win_copy: 
 #        src=/media/penelopeprime/Ensembl_Bitesized_Workshop_May17/Survey.html
 #        dest=C:\Users\Public\Desktop\Survey.html
 
-      win_copy:
-        src=/media/penelopeprime/Archive/TOPPView.lnk
-        dest=C:\Users\Public\Desktop\TOPPView.lnk
+#      win_copy:
+#        src=/media/penelopeprime/isacreator_icon.ico
+#        dest=C:\isacreator_icon.ico
 
+#    - win_file: path='C:\Users\Public\Desktop\run_WIN.cmd\ -\ Shortcut.lnk' state=absent
 
+#    - raw: Remove-Item 'C:\Users\Public\Desktop\run_WIN.cmd*' 
+
+#    - name: Copy lnk file
+#      win_copy:
+#        src=/media/penelopeprime/isacreator.lnk
+#        dest='C:\Users\Public\Desktop\isacreator.lnk'
+
+#    - name: Copy lnk file
+#      win_copy:
+#        src: /media/penelopeprime/FlowJo_V10.lnk
+#        dest: C:\Users\Public\Desktop\FlowJo_V10.lnk
+#        force: yes
+
+#    - raw: Remove-Item 'C:\Users\*\Desktop\*Penelope*'
+
+#    - name: Copy lnk file
+#      win_copy:
+#        src: /media/penelopeprime/PenelopePrime.lnk
+#        dest: C:\Users\Public\Desktop\PenelopePrime.lnk
+#        force: yes

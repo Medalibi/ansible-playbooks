@@ -1,0 +1,26 @@
+---
+- name: Install Drivers for HP on Windows
+  hosts: r1u29
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Copy sp79351 driver's package to hosts
+#      win_shell: copy-item -Path "\\10.7.243.68\shared\Archive\t730_driver\sp79351.exe" -Desination C:\SWSETUP\DRV\
+
+#      raw: copy-item -Path "'\\10.7.243.68\shared\Archive\t730_driver\sp79351.exe'" -Destination C:\SWSETUP\DRV\
+      win_copy:
+        src: /home/alibi/driver/sp79351.exe
+        dest: C:\sp79351.exe
+      
+    - name: Execute the sp79351 EXE driver package
+      raw: c:\sp79351.exe /S
+      ignore_errors: yes
+
+    - name: Remove the driver packages from host
+      raw: Remove-Item C:\sp79351.exe
+      ignore_errors: yes
+
+#    - name: Restart all Machines
+#      win_reboot:
+#        msg: Reboot initiated by Ansible after driver installation
+#        pre_reboot_delay_sec: 10

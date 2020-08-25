@@ -1,0 +1,14 @@
+---
+- name : Add a scheduled task to Windows hosts
+  hosts: ThinClientTR2 ThinClientTR1
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Activate Office 2016 against local KMS server
+      win_shell: "cscript OSPP.VBS /act"
+      args:
+        chdir: 'C:\Program Files (x86)\Microsoft Office\Office16\'
+        executable: cmd
+      register: output
+
+    - debug: var=output.stdout_lines

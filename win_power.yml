@@ -1,0 +1,11 @@
+---
+- name : Change power setting for Windows hosts
+  hosts: ThinClientTR2 ThinClientTR1
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: chnage power button to do nothing
+      win_shell: '{{ item }}'
+      with_items:
+        - 'powercfg.exe /SETACVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 4f971e89-eebd-4455-a8de-9e59040e7347 7648efa3-dd9c-4e3e-b566-50f929386280 0'
+        - 'powercfg.exe /SETACVALUEINDEX 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 4f971e89-eebd-4455-a8de-9e59040e7347 96996bc0-ad50-47ec-923b-6f41874dd9eb 0'

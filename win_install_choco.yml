@@ -1,11 +1,20 @@
 ---
 - name: Install packages using Chocolatey into Windows
-  hosts: ThinClientTR1 ThinClientTR2 
+  hosts: ThinClientTR1
   gather_facts: no
   tasks:
-    - name: initializing installation
-      win_chocolatey:
-        name: vmware-horizon-client
+#    - name: initializing installation
+#      win_chocolatey:
+#        name: vmware-horizon-client
 #        version: 1.12.5
 #        source: https://github.com/atom/atom/releases/download/v1.12.5/
 #        state: absent
+#      raw: choco upgrade flashplayerplugin
+
+   - name: Install atom that requires 'become'
+#     win_chocolatey:
+#       name: atom
+     win_shell: choco upgrade atom
+#     become: yes
+#     become_user: "{{inventory_hostname}}"
+#     become_method: runas

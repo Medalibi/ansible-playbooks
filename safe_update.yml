@@ -1,0 +1,20 @@
+---
+- name: Make software sheck and update 
+  hosts: local
+#TR1 TR2 local
+  gather_facts: no
+  tasks:
+   - name: Update the software cache
+     apt: update_cache=yes
+
+   - name: Upgrade all software
+     apt: upgrade=yes
+
+   - name: Remove useless packages from the cache
+     apt: 
+       autoclean: yes
+
+   - name: Remove dependencies that are no longer required
+     apt: 
+       autoremove: yes
+

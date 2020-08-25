@@ -1,0 +1,63 @@
+---
+- name: Install Horizon ViewAgent into the Linux VM
+  hosts: TR2
+## TR1 TR2
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+#   - name: Mount the NFS fileserver
+#     shell: mount -a
+#     ignore_errors: yes
+
+   - name: Install or make sure requirements are installed and updated
+     apt:
+       pkg: x11-xserver-utils
+       state: latest
+
+   - apt: pkg=libpam-pkcs11 state=latest
+
+   - name: VM hostname configuration
+     script: /home/alibi/hoster {{inventory_hostname}}
+     ignore_errors: yes
+
+   - name: Make sure the is no older version of Horzion on the machine
+     shell: rm -r /home/setup/VMware-*-linux* 
+     ignore_errors: yes
+
+   - name: Install expect
+     apt:
+       pkg: expect
+       state: latest
+
+   - name: Unarchive the Horizon ViewAgent Tarball
+     unarchive:
+       src: /home/alibi/Horizon_Tar_Files/VMware-horizonagent-linux-x86_64-7.7.0-10973212.tar.gz
+       dest: /home/setup/
+#       remote_src: True  
+       owner: setup
+       mode: 0777
+
+   - name: Install and register the Horizon ViewAgent with the Connection server
+     shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n $(hostname -s) -b broker1.courses.ebi.ac.uk -d courses.ebi.ac.uk -u linuxviewadmin -p fridge 
+     register: HorizonInstallLog
+
+   - name: Collecting installation logs
+     debug: var=HorizonInstallLog.stdout_lines
+
+   - name: Changing the default network in the Viewagenet configuration file
+     lineinfile : dest=/etc/vmware/viewagent-custom.conf regexp='^#Subnet=192.168.1.0/24' line='Subnet=10.7.243.0/24'
+
+   - name: Disabling Keyboard Layout Syncronisation
+     lineinfile : dest=/etc/vmware/viewagent-custom.conf regexp='^#KeyboardLayoutSync=FALSE' line='KeyboardLayoutSync=FALSE'
+
+   - name: Enable bi-directional Clipboard option between client and agent
+     lineinfile : dest=/etc/vmware/config regexp='^#Clipboard.Direction=1' line='Clipboard.Direction=1'
+
+   - name: Restart machines to apply the change
+     command: /sbin/shutdown -r +1 "Reboot triggered by Ansible for Horizon Agent installation."
+     async: 0
+     poll: 0
+     ignore_errors: true
+     
+

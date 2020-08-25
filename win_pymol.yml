@@ -1,0 +1,29 @@
+---
+- name : Install MSI packages 
+  hosts: windowsTR1
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Copy the MSI file to the host
+      win_copy:
+        src: /media/penelopeprime/Archive/PyMOL-2.0.6_0-Windows-x86_64.exe
+        dest: c:\PyMOL-2.0.6_0-Windows-x86_64.exe
+
+    - name: Install an MSI file with arguments
+      raw: Start-Process -Wait -FilePath C:\PyMOL-2.0.6_0-Windows-x86_64.exe -ArgumentList '/msi /quiet'
+      ignore_errors: yes
+
+#      win_msi: 
+#        path: C:\tightvnc_2.8.8_64x.msi
+#        state: absent
+#        extra_args: "/quiet /norestart ADDLOCAL=Server SET_USEVNCAUTHENTICATION=1 VALUE_OF_USEVNCAUTHENTICATION=1 SET_PASSWORD=1 VALUE_OF_PASSWORD=fridge"
+#        wait: true
+#      register: output
+
+    - debug: var=output
+
+#    - name: Delete the MSI file
+#      win_file: 
+#        path: C:\PyMOL-2.0.6_0-Windows-x86_64.exe
+#        state: absent
+

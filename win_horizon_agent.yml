@@ -1,0 +1,28 @@
+---
+- name : Install horizon agent into Windows VMS
+  hosts: windowsTR1
+#windowsTR2 windowsTR1
+  gather_facts: no
+  tasks:
+    - name: Restart all Machines
+      win_reboot:
+        msg: Reboot initiated by Ansible
+        pre_reboot_delay_sec: 2
+
+    - name: Copy the exe folder to the host
+      win_copy:
+        src=/media/penelopeprime/Archive/Horizon/VMware-viewagent-x86_64-7.4.0-7400533.exe
+        dest=C:\horizon_setup.exe
+
+    - name: Install an exe file with arguments
+      raw: Start-Process -Wait -FilePath "C:\horizon_setup.exe" -ArgumentList "/s /v'/qn VDM_VC_MANAGED_AGENT=1 VDM_SERVER_NAME=broker1.courses.ebi.ac.uk VDM_SERVER_USERNAME=linuxviewadmin@courses.ebi.ac.uk VDM_SERVER_PASSWORD=fridge ADDLOCAL=Core,SVIAgent,RTAV,USB'"
+
+    - name: Delete the exe file
+      win_file: path=C:\horizon_setup.exe state=absent
+      register: result
+
+    - name: Restart all Machines
+      win_reboot:
+        msg: Reboot initiated by Ansible
+        pre_reboot_delay_sec: 10
+      when: update_result.changed

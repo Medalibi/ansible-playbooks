@@ -1,19 +1,19 @@
 ---
 - name : Windows Update Register stopper
-  hosts: ThinClient
+  hosts: spare
 #ThinClientTR1 ThinClientTR2
   gather_facts: no
   tasks:
-    - name: Making sure that all Windows update services are stopped
-      win_service:
-        name: wuauserv
-        start_mode: manual
-        state: stopped
+#    - name: Making sure that all Windows update services are stopped
+#      win_service:
+#        name: wuauserv
+#        start_mode: manual
+#        state: stopped
 
-    - win_service:
-       name: bits
-       start_mode: manual
-       state: stopped
+#    - win_service:
+#       name: bits
+#       start_mode: manual
+#       state: stopped
 
     - name: Disable auto update registery 
 #      raw: Set-ItemProperty -Path "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name NoAutoUpdate -Value 1

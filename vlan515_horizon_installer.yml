@@ -1,27 +1,30 @@
 ---
 - name: Install Horizon ViewAgent into the Linux VM
-  hosts: TR2
+  hosts: containtest
 ## TR1 TR2 ExternalTR
   gather_facts: no
   tasks:
    - name: Configure local DNS to point to the NFS file server
      lineinfile : path=/etc/hosts line='10.7.245.5   penelopeprime.courses.ebi.ac.uk   penelopeprime'
 
-   - name: Remove olf fileserver DNs configuration
+   - name: Remove old fileserver DNs configuration
      lineinfile : path=/etc/hosts regexp='^10.7.243.68'  line=' '
 
+   - name: Unmount old NFS fileserver
+     shell: umount /media/penelopeprime
+
    - name: Make sure that the NFS configuration is well set
-     lineinfile : path=/etc/fstab line='penelopeprime.courses.ebi.ac.uk:/media/shared /media/penelopeprime nfs4 defaults 0 0'
+     lineinfile : path=/etc/fstab line='penelopeprime.courses.ebi.ac.uk:/media/shared/Course_Materials /media/penelopeprime nfs4 defaults 0 0'
 
    - name: Make sure the NFS folder is there
      file: path=/media/penelopeprime state=directory mode=0777
 
    - name: Mount the NFS fileserver
-     shell: umount /media/penelopeprime; mount -a 
+     shell: mount -a 
 
    - name: Unarchive the Horizon ViewAgent Tarball
      unarchive:
-       src: "/media/penelopeprime/Scripts/Horizon_tarballs/VMware-horizonagent-linux-x86_64-7.3.0-6604962.tar.gz"
+       src: "/media/penelopeprime/.Admin/VMware-horizonagent-linux-x86_64-7.4.0-7380911.tar.gz"
        dest: /home/setup/
        remote_src: True  
        owner: setup

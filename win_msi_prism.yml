@@ -1,6 +1,7 @@
 ---
 - name : Install Prism MSI packages 
-  hosts: r2u21            #ThinClientTR2 ThinClientTR1
+  hosts: ThinClientTR2
+#ThinClientTR2 ThinClientTR1
   gather_facts: no
   tasks:
     - name: Copy the MSI file to the host
@@ -27,4 +28,4 @@
       win_file: path=C:\InstallPrism7.msi state=absent
 
     - name: Delete the MSI Config file
-      win_file: path=C:\InstallPrism7.msi state=absent
+      win_file: path=C:\prism-config.xml state=absent

@@ -1,20 +1,33 @@
 ---
 - name : Install MSI packages 
-  hosts: ThinClient
+  hosts: masterTC
 #ThinClientTR2 ThinClientTR1
   gather_facts: no
   tasks:
     - name: Copy the MSI file to the host
       win_copy:
-        src=/media/penelopeprime/Archive/NSCP-0.5.0.62-x64.msi
-        dest=C:\NSCP-0.5.0.62-x64.msi
+        src=/media/penelopeprime/Archive/NSCP-0.5.2.35-x64.msi
+        dest=C:\NSCP-0.5.2.35-x64.msi
 
     - name: Install an MSI file with arguments
-      win_msi: 
-        path: C:\NSCP-0.5.0.62-x64.msi
-#        state: absent
-        extra_args: ADDLOCAL=FirewallConfig,LuaScript,DotNetPluginSupport,Documentation,CheckPlugins,NRPEPlugins,NSCPlugins,NSCAPlugin,PythonScript,ExtraClientPlugin,SampleScripts ALLOWED_HOSTS=127.0.0.1,10.7.243.29 CONF_NSCLIENT=1 CONF_NRPE=1 CONF_NSCA=1 CONF_CHECKS=1 CONF_NSCLIENT=1 CONF_SCHEDULER=1 CONF_CAN_CHANGE=1 MONITORING_TOOL=none NSCLIENT_PWD=password
+      win_package: 
+        path: C:\NSCP-0.5.2.35-x64.msi
+        arguments: ADDLOCAL=FirewallConfig,LuaScript,DotNetPluginSupport,Documentation,CheckPlugins,NRPEPlugins,NSCPlugins,NSCAPlugin,PythonScript,ExtraClientPlugin,SampleScripts ALLOWED_HOSTS=127.0.0.1,10.7.243.29 CONF_NSCLIENT=1 CONF_NRPE=1 CONF_NSCA=1 CONF_CHECKS=1 CONF_NSCLIENT=1 CONF_SCHEDULER=1 CONF_CAN_CHANGE=1 MONITORING_TOOL=none NSCLIENT_PWD=fridge
         wait: true
 
     - name: Delete the MSI file
-      win_file: path=C:\NSCP-0.5.0.62-x64.msi state=absent
+      win_file: path=C:\NSCP-0.5.2.35-x64.msi state=absent
+
+    - name: Copying configuration file
+      win_copy:
+        src: /media/penelopeprime/Archive/NSCP_scripts/nsclient.ini
+        dest: C:\Program Files\NSClient++\nsclient.ini
+
+    - name: Set Execution Policy
+      raw: Start-Process powershell -verb RunAs -ArgumentList 'Set-ExecutionPolicy RemoteSigned -Force'
+
+    - name: Restart the service to apply the configuration change
+      win_service:
+        name: nscp
+        start_mode: auto
+        state: restarted

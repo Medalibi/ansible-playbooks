@@ -1,0 +1,95 @@
+---
+- name: Install Horizon ViewAgent into the Linux VM
+  hosts: TR1
+## TR1 TR2
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+   - name: Install or make sure requirements are installed and updated
+     apt:
+       pkg: x11-xserver-utils
+       state: latest
+
+   - apt: pkg=libpam-pkcs11 state=latest
+ 
+#   - name: Configure local DNS to point to the NFS file server
+#     lineinfile : path=/etc/hosts line='10.7.243.68   penelopeprime.courses.ebi.ac.uk   penelopeprime'
+
+#   - name: Unmount old NFS fileserver
+#     shell: umount /media/penelopeprime
+
+#   - name: Make sure that the NFS configuration is well set
+#     lineinfile : path=/etc/fstab line='penelopeprime.courses.ebi.ac.uk:/media/shared/Course_Materials /media/penelopeprime nfs4 defaults 0 0'
+
+#   - name: Make sure the NFS folder is there 
+#     file: path=/media/penelopeprime state=directory mode=0777
+
+#   - name: Mount the NFS fileserver
+#     shell: mount -a 
+#     ignore_errors: yes
+
+   - name: VM hostname configuration
+     script: /home/alibi/hoster20 {{inventory_hostname}}
+     ignore_errors: yes
+
+   - name: Make sure the is no older version of Horzion on the machine
+     shell: rm -r /home/setup/VMware-*-linux* 
+     ignore_errors: yes
+
+   - name: Install expect
+     apt:
+       pkg: expect
+       state: latest
+
+#   - name: Configure gdm3 as default
+#     script: /home/alibi/dpkgreconfig
+
+#   - name: Restart gdm3 service
+#     shell: systemctl restart gdm3
+
+   - name: Unarchive the Horizon ViewAgent Tarball
+     unarchive:
+#       src: /home/alibi/Horizon_Tar_Files/VMware-horizonagent-linux-x86_64-7.7.0-10973212.tar.gz
+#       src: /home/alibi/Horizon_Tar_Files/VMware-horizonagent-linux-x86_64-7.8.0-12610615.tar.gz
+#       src: /home/alibi/Horizon_Tar_Files/VMware-horizonagent-linux-x86_64-7.9.0-13916467.tar.gz
+       src: /media/penelopeprime/.Admin/Horizon-7.12/VMware-horizonagent-linux-x86_64-7.12.0-15765535.tar.gz
+       dest: /home/setup/
+       remote_src: True  
+       owner: setup
+       mode: 0777
+
+#   - name: Download VHCI driver
+#     get_url:
+#       url: "https://iweb.dl.sourceforge.net/project/usb-vhci/linux%20kernel%20module/vhci-hcd-1.15.tar.bz2"
+#       dest: /usr/local/vhci-hcd-1.15.tar.bz2
+#       mode: '0777'
+
+#   - name: Compile VHCI driver
+#     shell: tar -xvf /usr/local/vhci-hcd-1.15.tar.bz2 -C /usr/local/ && cd /usr/local/vhci-hcd-1.15 && patch -p1 < /home/setup/VMware-horizonagent-linux-x86_64-7.9.0-13916467/resources/vhci/patch/vhci.patch && make clean && make && make install
+
+   - name: Install and register the Horizon ViewAgent with the Connection server
+     shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n $(hostname -s) -b brokertest2-0.courses.ebi.ac.uk -d courses.ebi.ac.uk -u linuxviewadmin -p fridge
+     register: HorizonInstallLog
+
+   - name: Collecting installation logs
+     debug: var=HorizonInstallLog.stdout_lines
+
+   - name: Changing the default network in the Viewagenet configuration file
+     lineinfile : dest=/etc/vmware/viewagent-custom.conf regexp='^#Subnet=192.168.1.0/24' line='Subnet=10.7.244.0/24'
+
+   - name: Changing SSO Desktop Type 
+     lineinfile : dest=/etc/vmware/viewagent-custom.conf regexp='^#SSODesktopType=UseGnomeUbuntu' line='SSODesktopType=UseGnomeUbuntu'
+
+   - name: Disabling Keyboard Layout Syncronisation
+     lineinfile : dest=/etc/vmware/viewagent-custom.conf regexp='^#KeyboardLayoutSync=FALSE' line='KeyboardLayoutSync=FALSE'
+
+   - name: Enable bi-directional Clipboard option between client and agent
+     lineinfile : dest=/etc/vmware/config regexp='^#Clipboard.Direction=1' line='Clipboard.Direction=1'
+
+   - name: Restart machines to apply the change
+     command: /sbin/shutdown -r +1 "Reboot triggered by Ansible for Horizon Agent installation."
+     async: 0
+     poll: 0
+     ignore_errors: true
+     

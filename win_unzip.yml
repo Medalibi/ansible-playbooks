@@ -1,0 +1,67 @@
+---
+- name: Copy files/folders on Windows
+  hosts: ThinClientTR1 ThinClientTR2
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Copy archive
+      win_copy: src=/home/alibi/atom-x64-windows.zip dest=C:\SWSETUP\
+
+    - name: Unzip atom files
+      win_unzip:
+        src: 'C:\SWSETUP\atom-x64-windows.zip'
+        dest: 'C:\Program Files (x86)'
+        creates: 'C:\Program Files (x86)\Atom x64'
+        delete_archive: yes
+
+    - name: Copy archive
+      win_copy: src=/home/alibi/Atom.lnk dest=C:\Users\Public\Desktop\Atom.lnk 
+# remote_src=yes
+#      become: yes
+#      become_method: runas
+
+    - raw: Remove-Item 'C:\SWSETUP\*'
+
+
+#     - win_file: 
+#         path: 'C:\Windows\System32\GroupPolicy\Machine\Scripts\Shutdown'
+#         state: directory
+
+#     - win_copy:
+#        src: /media/penelopeprime/Course_Materials/.Admin/TempClean.bat
+#        dest: 'C:\Windows\System32\GroupPolicy\Machine\Scripts\Shutdown\TempClean.bat'
+
+
+#    - name: Copy icon file
+#      win_copy: src=/media/penelopeprime/Scripts/AtomSetup.exe dest=C:\SWSETUP\
+
+#      win_copy: 
+#        src=/media/penelopeprime/Ensembl_Bitesized_Workshop_May17/Survey.html
+#        dest=C:\Users\Public\Desktop\Survey.html
+
+#      win_copy:
+#        src=/media/penelopeprime/isacreator_icon.ico
+#        dest=C:\isacreator_icon.ico
+
+#    - win_file: path='C:\Users\Public\Desktop\run_WIN.cmd\ -\ Shortcut.lnk' state=absent
+
+#    - raw: Remove-Item 'C:\Users\Public\Desktop\run_WIN.cmd*' 
+
+#    - name: Copy lnk file
+#      win_copy:
+#        src=/media/penelopeprime/isacreator.lnk
+#        dest='C:\Users\Public\Desktop\isacreator.lnk'
+
+#    - name: Copy lnk file
+#      win_copy:
+#        src: /media/penelopeprime/FlowJo_V10.lnk
+#        dest: C:\Users\Public\Desktop\FlowJo_V10.lnk
+#        force: yes
+
+#    - raw: Remove-Item 'C:\Users\*\Desktop\*Penelope*'
+
+#    - name: Copy lnk file
+#      win_copy:
+#        src: /media/penelopeprime/PenelopePrime.lnk
+#        dest: C:\Users\Public\Desktop\PenelopePrime.lnk
+#        force: yes

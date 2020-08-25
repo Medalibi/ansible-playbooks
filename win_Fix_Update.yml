@@ -1,6 +1,6 @@
 ---
 - name: Fix Windows Update freeze and non-respondence
-  hosts: r1u29 
+  hosts: spare
 #ThinClientTR2 ThinClientTR1
   gather_facts: no
   tasks:

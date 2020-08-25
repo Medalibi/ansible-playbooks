@@ -1,31 +1,63 @@
 ---
 - name: Install Horizon ViewAgent into the Linux VM
-  hosts: TR2
+  hosts: TR1
 ## TR1 TR2
+  become: yes
+  become_method: sudo
   gather_facts: no
   tasks:
-   - name: Configure local DNS to point to the NFS file server
-     lineinfile : path=/etc/hosts line='10.7.243.68   penelopeprime.courses.ebi.ac.uk   penelopeprime'
+#   - shell: pip install -U pyopenssl
 
-   - name: Make sure that the NFS configuration is well set
-     lineinfile : path=/etc/fstab line='penelopeprime.courses.ebi.ac.uk:/media/shared /media/penelopeprime nfs4 defaults 0 0'
+   - name: Install or make sure requirements are installed and updated
+     apt:
+       pkg: x11-xserver-utils
+       state: latest
 
-   - name: Make sure the NFS folder is there 
-     file :  path=/media/penelopeprime state=directory mode=0777
+#   - name: Configure local DNS to point to the NFS file server
+#     lineinfile : path=/etc/hosts line='10.7.243.68   penelopeprime.courses.ebi.ac.uk   penelopeprime'
 
-   - name: Mount the NFS fileserver
-     shell: umount /media/penelopeprime; mount -a 
+#   - name: Make sure that the NFS configuration is well set
+#     lineinfile : path=/etc/fstab line='penelopeprime.courses.ebi.ac.uk:/media/shared/Course_Materials /media/penelopeprime nfs4 defaults 0 0'
 
+#   - name: Make sure the NFS folder is there 
+#     file :  path=/media/penelopeprime state=directory mode=0777
+
+#   - name: Mount the NFS fileserver
+#     shell: umount /media/penelopeprime; mount -a 
+
+#   - name: Mount the NFS fileserver
+#     shell: mount -a
+
+   - name: VM hostname configuration
+     script: /home/alibi/hoster {{inventory_hostname}}
+     ignore_errors: yes
+
+   - name: Make sure the is no older version of Horzion on the machine
+     shell: rm -r /home/setup/VMware-*-linux*
+     ignore_errors: yes
+ 
    - name: Unarchive the Horizon ViewAgent Tarball
      unarchive:
-       src: "/media/penelopeprime/Scripts/Horizon_tarballs/VMware-horizonagent-linux-x86_64-7.3.0-6604962.tar.gz"
+#       src: /home/alibi/Horizon_Tar_Files/VMware-horizonagent-linux-x86_64-7.4.0-7380911.tar.gz
+       src: /home/alibi/Horizon_Tar_Files/VMware-horizonagent-linux-x86_64-7.7.0-10973212.tar.gz
+#       src: /media/penelopeprime/.Admin/VMware-horizonagent-linux-x86_64-7.4.0-7380911.tar.gz
+#       src: /media/penelopeprime/Course_Materials/.Admin/VMware-horizonagent-linux-x86_64-7.4.0-7380911.tar.gz
        dest: /home/setup/
-       remote_src: True  
+#       remote_src: True
        owner: setup
        mode: 0777
 
+
+#   - copy:
+#       src: "/media/penelopeprime/.Admin/VMware-horizonagent-linux-x86_64-7.4.0-7380911"
+#       dest: /home/setup/
+#       remote_src: True
+#       owner: setup
+#       mode: 0777
+
+
    - name: Install and register the Horizon ViewAgent with the Connection server
-     shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n $(hostname -s) -b broker1.courses.ebi.ac.uk -d courses.ebi.ac.uk -u linuxviewadmin -p password 
+     shell: cd /home/setup/VMware-*-linux* && ./install_viewagent.sh -r no -A yes -n $(hostname -s) -b broker1.courses.ebi.ac.uk -d courses.ebi.ac.uk -u linuxviewadmin -p fridge 
      register: HorizonInstallLog
 
    - name: Collecting installation logs
@@ -41,7 +73,7 @@
      lineinfile : dest=/etc/vmware/config regexp='^#Clipboard.Direction=1' line='Clipboard.Direction=1'
 
    - name: Restart machines to apply the change
-     command: /sbin/shutdown -r +1 "Reboot triggered by Ansible (Horizon Agent installation)."
+     command: /sbin/shutdown -r +1 "Reboot triggered by Ansible for Horizon Agent installation."
      async: 0
      poll: 0
      ignore_errors: true

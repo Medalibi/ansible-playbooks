@@ -1,6 +1,6 @@
 ---
 - name: Copy configruation files to a Windows hosts
-  hosts: ThinClient
+  hosts: masterTC
 #ThinClientTR2 ThinClientTR1
   gather_facts: no
   tasks:

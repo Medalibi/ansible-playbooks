@@ -1,0 +1,38 @@
+---
+- name : Install ElacticSearch Metricbeat 
+  hosts: ThinClientTR2 ThinClientTR1
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Copy the metricbeat archive to the host
+      win_copy:
+        src: /media/penelopeprime/Archive/metricbeat.zip
+        dest: C:\metricbeat.zip
+
+    - name: Extract the metricbeat archive
+      win_unzip:
+        src: C:\metricbeat.zip
+        dest: C:\
+
+    - name: Delete the zip Archive
+      win_file: path=C:\metricbeat.zip state=absent
+
+    - name: Install metricbeat
+      win_shell: c:\metricbeat\install-service-metricbeat.ps1
+
+    - name: Loading metricbeat Template
+      raw: c:\metricbeat\metricbeat.exe setup config -c c:\metricbeat\metricbeat.yml --template -E output.logstash.enabled=false -E 'output.elasticsearch.hosts=["10.7.243.25:9200"]'
+
+    - name: Creating Metricbeat Template Manually
+      raw: c:\metricbeat\metricbeat.exe export template --es.version 6.2.1 config -c c:\metricbeat\metricbeat.yml | Out-File -Encoding UTF8 c:\metricbeat\metricbeat.template.json
+
+    - name: loading Metricbeatbeat Template Manually
+      raw: Invoke-RestMethod -Method Put -ContentType "application/json" -InFile c:\metricbeat\metricbeat.template.json -Uri http://10.7.243.25:9200/_template/winlogbeat-6.2.1
+
+    - name: Setup Metricbeat Kibana dashboards
+      raw: c:\metricbeat\metricbeat.exe setup config -c c:\metricbeat\metricbeat.yml --dashboards
+
+    - name: Starting Metricbeat service
+      raw: Start-Service Metricbeat
+
+

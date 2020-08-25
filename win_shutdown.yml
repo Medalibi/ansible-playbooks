@@ -1,9 +1,9 @@
 ---
 - name: Windows Power control
-  hosts: ThinClientTR1 #ThinClientTR2
-  gather_facts: no
+  hosts: r2u30
+#ThinClientTR1 ThinClientTR2
   tasks:
-    - name: Shutdown all machines  
-      raw: shutdown -s -t 5
+    - name: Shutdown remote Windows hosts  
+      raw: shutdown -s -t 15
 
 

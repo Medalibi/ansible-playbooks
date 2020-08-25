@@ -1,0 +1,36 @@
+---
+- name: Edit Enviremental Variables on Windows hosts
+  hosts: ThinClientTR1 ThinClientTR2
+#ThinClientTR2 ThinClientTR1
+  gather_facts: no
+  tasks:
+    - name: Set TEMP environment variable for all users
+      win_environment:
+        state: present
+        name: TEMP
+        value: 'C:\Temp'
+        level: user
+      ignore_errors: yes
+      register: output
+    - debug: var=output
+
+    - name: Set TMP environment variable for all users
+      win_environment:
+        state: present
+        name: TMP
+        value: 'C:\Temp'
+        level: user
+      ignore_errors: yes
+      register: output
+    - debug: var=output
+
+    - name: Create user profile folderr
+      win_file:
+        path: 'C:\Users\{{ inventory_hostname }}\Documents\WindowsPowerShell'
+        state: directory
+
+    - name: Copy a single file
+      win_copy:
+        src: /home/alibi/profile.ps1
+        dest: 'C:\Users\{{ inventory_hostname }}\Documents\WindowsPowerShell\profile.ps1'
+

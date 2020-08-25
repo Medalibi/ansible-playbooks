@@ -1,27 +1,48 @@
 ---
 - name: Update Windows softwares using Chocolatey
-  hosts: r1u29
+  hosts: ManagementWinServ
 #ThinClientTR1 ThinClientTR2 
   gather_facts: no
   tasks:
+    - name: Install Chocolatey
+      win_chocolatey:
+        name: '{{ item }}'
+        state: latest
+      with_items:
+        - chocolatey
+        - chocolatey-core.extension
+        - powershell
+      ignore_errors: yes
 
-#    - name: get choco version
-#      win_command: choco
-#      register: choco_out
-#      failed_when: no
-#      changed_when: no
+    - name: Install and update OS Plugins and Tools
+      win_chocolatey:
+        name: '{{ item }}'
+        state: latest
+      async: 60
+      with_items:
+        - curl
+        - openssh
+        - wget
+        - atom
+        - putty
+      ignore_errors: yes
 
-#    - win_command: choco upgrade -y chocolatey
-#      when: (choco_out.stdout_lines|map('regex_search','^Chocolatey v\d+(\.\d+)+$')|select('string')|list)[0].split()[1]|version_compare('v0.9.10', '<')
+    - name: Install and update NotePad++
+      win_chocolatey:
+        name: notepadplusplus.install
+        state: latest
 
-#    - debug: var=choco_out.stdout
+    - name: Create a Desktop Icon for NotePad++
+      win_copy: src=/media/penelopeprime/Archive/Notepad++.lnk dest=C:\Users\Public\Desktop\Notepad++.lnk
 
-    - win_command: choco upgrade -y firefox
+    - name: Install and update archiver
+      win_chocolatey:
+        name: 7zip.install
+        state: latest
 
-
-#    - name: Update Chocolatey
-#      win_chocolatey:
-#        name: chocolatey
+    - name: Install VMware Tools
+      win_chocolatey:
+        name: vmware-tools
 #        state: latest
-#        upgrade: yes
-
+        version: '10.1.5.5055683'
+      ignore_errors: yes

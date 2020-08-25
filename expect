@@ -1,0 +1,18 @@
+#!/usr/bin/expect
+
+# Define variables
+set timeout 30
+set ipadd [lindex $argv 0]
+set pass [lindex $argv 1]
+set cmd [lindex $argv 2]
+#set dist [lindex $argv 3]
+
+# Connect to remote host via SSH 
+spawn ssh -t setup@$ipadd $cmd
+
+# Wait for it and do the condution
+expect "*yes/no*" {
+    send "yes\r"
+    expect "*?assword*" { send "$pass\r" }
+    } "*?asswor*" { send "$pass\r" }
+#interact

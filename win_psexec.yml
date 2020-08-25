@@ -1,0 +1,25 @@
+---
+- name: Run a program on PowerShell 
+  hosts: ThinClientTR2 ThinClientTR1
+#ThinClientTR2 ThinClientTR1
+  become_method: runas
+  gather_facts: no
+  tasks:
+#    - name: Schedule a task to run after it was executed
+#      win_scheduled_task:
+#        name: MSWord
+#        description: Manage MS word
+#        actions:
+#        - path: 'C:\Program Files (x86)\Microsoft Office\Office16\WINWORD.EXE'
+#        triggers:
+#        - type: logon
+#        username: 'courses\{{ inventory_hostname }}'
+#        state: present
+#        enabled: yes
+
+    - name: Remove Task from task list
+      win_scheduled_task:
+        name: MSWord
+        state: absent
+        enabled: no
+

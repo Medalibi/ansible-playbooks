@@ -1,0 +1,230 @@
+---
+- name: Init golden ubuntu image
+  hosts: mastervm
+  # mastervm localvm ubuntuvm
+  name: Configure VMs instances
+  remote_user: setup
+  become: True
+  gather_facts: True
+  pre_tasks:
+    - name: Make the system faster
+      shell: |
+        systemctl disable cupsd
+        systemctl disable cups-browsed
+        systemctl disable avahi-daemon
+
+    - name: Install required packages for the NVIDIA driver installer
+      apt: name={{ item }} state=latest update_cache=yes
+      loop: [ 'libglvnd-dev', 'libglvnd-core-dev', 'libglvnd0', 'pkg-config', 'build-essential', 'nfs-common', 'x11-xserver-utils']
+
+    - name: Configure local DNS to point to the NFS file server
+      lineinfile : path=/etc/hosts line='10.33.32.20   penelopeprime.training.ebi.ac.uk   penelopeprime'
+
+  #   - name: Remove old fileserver DNs configuration
+  #     lineinfile : path=/etc/hosts regexp='^10.7.243.68'  line=' '
+
+    - name: Unmount old NFS fileserver
+      shell: umount /media/penelopeprime
+      ignore_errors: yes
+
+  #   - name: Remove old fileserver DNS configuration
+  #     lineinfile : path=/etc/fstab regexp='^10.7.243.68'  line=' '
+
+    - name: Make sure that the NFS configuration is well set
+      lineinfile : path=/etc/fstab line='10.33.32.20:/media/shared/Course_Materials /media/penelopeprime    nfs    defaults     0 0'
+
+    - name: Make sure the NFS folder is there
+      file: path=/media/penelopeprime state=directory mode=0777
+
+    - name: Mount the NFS fileserver
+      shell: mount -a
+
+    - name: Update the software cache
+      apt: update_cache=yes
+
+    - name: Add extra repos
+      shell: add-apt-repository -y ppa:atareao/atareao && apt install -y linux-headers-$(uname -r)
+
+    - name: Install Ubuntu Repo based tools
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+        - autoconf
+        - libtool
+        - aptitude
+        - openjdk-8-jre
+        - default-jre
+        - openjdk-8-jre-headless
+        - libcanberra-gtk3-module
+        - libcanberra-gtk-module
+        - libxml2-dev
+        - libxml2
+        - liblzma-dev
+        - curl
+        - libcurl4-openssl-dev
+        - build-essential
+        - make
+        - gcc
+        - automake
+        - libssl-dev
+        - zlib1g-dev
+        - libbz2-dev
+        - python3
+        - python
+        - python3-pip
+        - python-pip
+        - gnome-session
+        - ubuntu-desktop
+        - lightdm
+        - mesa-utils
+        - power-commands
+        - chromium-browser
+        - ubuntu-restricted-extras
+        - unrar
+        - rar
+        - icedax
+        - lame
+        - sharutils
+        - unace
+        - zip
+        - unzip
+        - p7zip-full
+        - p7zip-rar
+        - flashplugin-installer
+        - bleachbit
+        - openssh-server
+        - htop
+        - nload
+        - git
+        - python-dbus
+        - python-gobject
+        - libmpeg3-dev
+        - cmake
+        - libjpeg8
+        - libglib2.0-dev
+        - libglib2.0-0
+        - libexpat1
+        - libxss1
+        - libudev1
+        - libudev-dev
+        - libflac++-dev
+        - libflac-dev
+        - libswscale-dev
+        - expect
+        - nfs-common
+        - libglvnd-dev
+        - libglvnd-core-dev
+        - libglvnd0
+        - pkg-config
+        - x11-xserver-utils
+        - gcc
+        - make
+        - ubuntu-desktop
+        - open-vm-tools
+        - open-vm-tools-desktop
+
+    - name: Install languepacks
+      shell: |
+        apt -y install `check-language-support -l fr`
+        apt -y install `check-language-support -l en`
+        apt -y install `check-language-support -l es`
+        apt -y install `check-language-support -l de`
+        apt -y install `check-language-support -l it`
+
+    - name: Upgrade all software
+      apt: upgrade=yes
+
+    - name: Remove useless packages from the cache
+      apt:
+        autoclean: yes
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
+
+    - name: Stop gdm initial setup
+      lineinfile:
+        dest: /etc/gdm3/custom.conf
+        regexp: '^# Enabling timed login'
+        line: 'InitialSetupEnable=false'
+
+    - name: Stop gdm initial setup 2.0
+      lineinfile:
+        dest: /etc/xdg/autostart/gnome-initial-setup-first-login.desktop
+        regexp: '^Exec=/usr/lib/gnome-initial-setup/gnome-initial-setup --existing-user'
+        line: '##Exec=/usr/lib/gnome-initial-setup/gnome-initial-setup --existing-user'
+
+    - name: Copy Terminal Desktop file
+      copy:
+        src: /usr/share/applications/gnome-terminal.desktop
+        dest: /home/training/Desktop/gnome-terminal.desktop
+        remote_src: yes
+        owner: training
+        group: training
+        mode: '0777'
+
+    - name: Create user autostater folder
+      file:
+        path: /home/training/.config/autostart
+        state: directory
+
+    - name: Create Desktop truster desktop file
+      file:
+        path: /home/training/.config/autostart/desktop-truster.desktop
+        state: touch
+        owner: training
+        group: training
+        mode: '0777'
+
+    - name: Create Desktop truster Bash script file
+      file:
+        path: /home/training/.config/autostart/desktop-truster.sh
+        state: touch
+        owner: training
+        group: training
+        mode: '0777'
+
+    - name: Fill-in Desktop truster desktop file
+      blockinfile:
+        path: /home/training/.config/autostart/desktop-truster.desktop
+        block: |
+          [Desktop Entry]
+          Type=Application
+          Comment=Autostarter to trust all desktop files
+          Terminal=false
+          Name=Desktop Truster
+          Exec=/home/training/.config/autostart/desktop-truster.sh
+
+    - name: Fill-in Desktop truster Bash script file
+      blockinfile:
+        path: /home/training/.config/autostart/desktop-truster.sh
+        block: |
+          #!/bin/bash
+          # Wait for nautilus-desktop
+          while ! pgrep -f 'nautilus-desktop' > /dev/null; do
+            sleep 1
+          done
+          # enable user home default desktop icons
+          gsettings set org.gnome.nautilus.desktop home-icon-visible  'true'
+          gsettings set org.gnome.nautilus.desktop volumes-visible 'true'
+          gsettings set org.gnome.nautilus.desktop trash-icon-visible 'true'
+          gsettings set org.gnome.desktop.lockdown disable-lock-screen 'true'
+          gsettings set org.gnome.desktop.screensaver lock-enabled 'false'
+          # Trust all desktop files
+          for i in /home/training/Desktop/*.desktop; do
+            [ -f "${i}" ] || break
+            gio set "${i}" "metadata::trusted" yes
+            # gio set "${i}" "metadata::trusted" true (ubuntu 19.04 onward)
+          done
+          # Restart nautilus, so that the changes take effect (otherwise we would have to press F5)
+          killall nautilus-desktop && nautilus-desktop &
+          # Remove X from this script, so that it won't be executed next time
+          chmod -x ${0}
+
+  tasks:
+    - name: Reboot the course VMs for final setup
+      reboot:
+        msg: System reboot inititated by Ansible to start user session
+        reboot_timeout: 120

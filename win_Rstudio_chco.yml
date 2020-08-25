@@ -1,0 +1,81 @@
+---
+- name: Update Windows softwares using Chocolatey
+  hosts: ThinClientTR2
+#ThinClientTR1 ThinClientTR2 
+  gather_facts: no
+  tasks:
+
+#    - name: get choco version
+#      win_command: choco
+#      register: choco_out
+#      failed_when: no
+#      changed_when: no
+
+    - name: Install R CRAN 
+      win_command: choco upgrade -y r.project
+
+    - name: Install Rstudio
+      win_command: choco upgrade -y r.studio
+
+#    - name: Copy icon file
+#      win_copy:
+#        src=/media/penelopeprime/Rstudio.lnk
+#        dest='C:\Users\Public\Desktop\Rstudio.lnk'
+
+    - name: Copy env file
+      win_copy:
+        src=/media/penelopeprime/Renviron.site
+        dest='C:\Users\{{inventory_hostname}}\Documents\R\R-3.5.2\etc\Renviron.site'
+
+    - name: Copy env file
+      win_copy:
+        src=/media/penelopeprime/Renviron.site
+        dest='C:\Program Files\R\R-3.5.2\etc\Renviron.site'
+
+    - name: Copy Script.R file
+      win_copy:
+        src=/media/penelopeprime/Rstudio.R
+        dest=C:\Rstudio.R
+
+    - name: Allow write rights to R libraries
+      win_acl:
+        path: C:/Program Files/R/R-3.5.0/library
+        user: courses.ebi.ac.uk\Domain Users
+        type: allow
+        rights: FullControl
+
+    - name: Adding R Cran bin to the PATH variable
+      raw: SETX /M Path "%Path%;C:\Program Files\R\R-3.5.0\bin\;"
+
+    - name: Adding R Cran bin to the PATH variable
+      win_shell: SETX /M Path "%Path%;C:\Program Files\R\R-3.5.0\bin\;"
+
+    - name: Adding R Cran bin to the PATH variable
+      win_shell: SETX /M Path "%Path%;C:\Program Files\R\R-3.5.0\bin\;"
+      args:
+        executable: cmd
+
+    - name: Adding R Cran bin to the PATH variable
+      win_command: SETX /M Path "%Path%;C:\Program Files\R\R-3.5.0\bin\;"
+
+    - name: Install R Dependency
+      raw: Rscript.exe C:\Rstudio.R
+
+#    - name: Allow write rights to R libraries
+#      win_acl:
+#        path: C:/Program Files/R/R-3.5.0/library
+#        user: courses.ebi.ac.uk\Domain Users
+#        type: allow
+#        rights: FullControl
+
+
+    - name: Delete Script.R file
+      win_file: path=C:\Rstudio.R state=absent
+
+#    - name: Update Chocolatey
+#      win_chocolatey:
+#        name: chocolatey
+#        state: latest
+#        upgrade: yes
+
+

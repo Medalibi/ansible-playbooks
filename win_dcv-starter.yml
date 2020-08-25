@@ -1,0 +1,10 @@
+---
+- name: Copy files/folders on Windows
+  hosts: ThinClientTR1 ThinClientTR2
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Copy lnk file
+      win_copy:
+        src=/home/alibi/AWSTrainingVM.dcv
+        dest='C:\Users\Public\Desktop\NICE_DCV_Client.dcv'

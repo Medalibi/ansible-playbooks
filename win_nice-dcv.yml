@@ -1,0 +1,8 @@
+---
+- name: Install NICE DCV Client using Chocolatey
+  hosts: ThinClientTR1 ThinClientTR2
+#ThinClientTR1 ThinClientTR2
+  gather_facts: no
+  tasks:
+    - name: Ensure nice-dcv-client installed
+      win_shell: choco install nice-dcv-client --version=2019.1.7114
